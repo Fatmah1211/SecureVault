@@ -34,11 +34,12 @@ def initialize_database():
 
     conn.commit()
     conn.close()
-    def register_user(username, password_hash):
+
+def register_user(username, password_hash):
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', 
+        cursor.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)',
                       (username, password_hash))
         conn.commit()
         return True
@@ -50,7 +51,7 @@ def initialize_database():
 def login_user(username, password_hash):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT id FROM users WHERE username = ? AND password_hash = ?', 
+    cursor.execute('SELECT id FROM users WHERE username = ? AND password_hash = ?',
                   (username, password_hash))
     user = cursor.fetchone()
     conn.close()
@@ -69,7 +70,7 @@ def save_password(user_id, website, username, encrypted_password, category='Gene
 def get_passwords(user_id):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT id, website, username, encrypted_password, category, created_at FROM passwords WHERE user_id = ?', 
+    cursor.execute('SELECT id, website, username, encrypted_password, category, created_at FROM passwords WHERE user_id = ?',
                   (user_id,))
     rows = cursor.fetchall()
     conn.close()
