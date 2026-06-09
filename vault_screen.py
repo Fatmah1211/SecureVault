@@ -46,3 +46,19 @@ class VaultScreen:
         # Copy Password Button
         copy_btn = tk.Button(btn_frame, text="Copy Password", width=15, bg="blue", fg="white")
         copy_btn.grid(row=0, column=2, padx=10)
+        # Show/Hide Password Button
+        self.show_pass = False
+        show_btn = tk.Button(btn_frame, text="Show Password", width=15, bg="orange", fg="white", command=self.toggle_password)
+        show_btn.grid(row=0, column=3, padx=10)
+
+    def toggle_password(self):
+        if self.show_pass:
+            self.show_pass = False
+            for item in self.tree.get_children():
+                values = self.tree.item(item)["values"]
+                self.tree.item(item, values=(values[0], values[1], "••••••"))
+        else:
+            self.show_pass = True
+            for item in self.tree.get_children():
+                values = self.tree.item(item)["values"]
+                self.tree.item(item, values=(values[0], values[1], values[2]))
