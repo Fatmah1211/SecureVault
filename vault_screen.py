@@ -23,3 +23,11 @@ class VaultScreen:
         self.tree.column("Username", width=200)
         self.tree.column("Password", width=200)
         self.tree.pack(fill="both", expand=True)
+        # Sample Data for testing
+        sample_data = [
+            ("facebook.com", "ayesha123", "••••••"),
+            ("gmail.com", "ayesha@gmail.com", "••••••"),
+            ("github.com", "ayesha_dev", "••••••"),
+        ]
+        for item in sample_data:
+            self.tree.insert("", "end", values=item)
