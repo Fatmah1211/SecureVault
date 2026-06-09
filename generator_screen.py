@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import random
 import string
-from password_utils import generate_password
+from password_utils import generate_password, check_strength
 
 class GeneratorScreen(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -58,6 +58,11 @@ class GeneratorScreen(tk.Frame):
             row=8, column=0, columnspan=2, padx=20, pady=5
         )
 
+        # --- Strength indicator ---
+        tk.Label(self, text="Password Strength:").grid(row=9, column=0, sticky="w", padx=20)
+        self.strength_label = tk.Label(self, text="—", font=("Arial", 11, "bold"))
+        self.strength_label.grid(row=9, column=1, sticky="w")
+
     def on_generate(self):
         length = self.length_var.get()
         password = generate_password(
@@ -67,3 +72,8 @@ class GeneratorScreen(tk.Frame):
             use_upper=self.use_upper.get()
         )
         self.output_var.set(password)
+
+        # Strength check
+        strength = check_strength(password)
+        colors = {"Weak": "red", "Medium": "orange", "Strong": "green"}
+        self.strength_label.config(text=strength, fg=colors[strength])
