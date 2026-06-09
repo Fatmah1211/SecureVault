@@ -6,10 +6,11 @@ class VaultScreen:
         self.root = root
         self.root.title("SecureVault - Password Vault")
         self.root.geometry("800x500")
-        
+
         # Title Label
         title = tk.Label(root, text="My Password Vault", font=("Arial", 18, "bold"))
         title.pack(pady=10)
+
         # Table Frame
         frame = tk.Frame(root)
         frame.pack(pady=10, fill="both", expand=True)
@@ -23,6 +24,7 @@ class VaultScreen:
         self.tree.column("Username", width=200)
         self.tree.column("Password", width=200)
         self.tree.pack(fill="both", expand=True)
+
         # Sample Data for testing
         sample_data = [
             ("facebook.com", "ayesha123", "••••••"),
@@ -31,7 +33,8 @@ class VaultScreen:
         ]
         for item in sample_data:
             self.tree.insert("", "end", values=item)
-            # Buttons Frame
+
+        # Buttons Frame
         btn_frame = tk.Frame(root)
         btn_frame.pack(pady=10)
 
@@ -40,12 +43,13 @@ class VaultScreen:
         add_btn.grid(row=0, column=0, padx=10)
 
         # Delete Entry Button
-        delete_btn = tk.Button(btn_frame, text="Delete Entry", width=15, bg="red", fg="white")
+        delete_btn = tk.Button(btn_frame, text="Delete Entry", width=15, bg="red", fg="white", command=self.delete_entry)
         delete_btn.grid(row=0, column=1, padx=10)
 
         # Copy Password Button
         copy_btn = tk.Button(btn_frame, text="Copy Password", width=15, bg="blue", fg="white")
         copy_btn.grid(row=0, column=2, padx=10)
+
         # Show/Hide Password Button
         self.show_pass = False
         show_btn = tk.Button(btn_frame, text="Show Password", width=15, bg="orange", fg="white", command=self.toggle_password)
@@ -62,3 +66,8 @@ class VaultScreen:
             for item in self.tree.get_children():
                 values = self.tree.item(item)["values"]
                 self.tree.item(item, values=(values[0], values[1], values[2]))
+
+    def delete_entry(self):
+        selected = self.tree.selection()
+        if selected:
+            self.tree.delete(selected)
