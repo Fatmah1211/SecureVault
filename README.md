@@ -77,7 +77,7 @@ count = check_password_breached("password123")
 |--------|--------|---------------|
 | Fatmah Tahir | backend + integration | Database, encryption, HIBP, merging |
 | Fizzah Ahsan | login-screen | Login and register screen |
-|  | vault-screen | Password vault screen |
+| Ayesha Noor  | vault-screen | Password vault screen |
 | Maida Saleem | generator-screen | Password generator screen |
 | Drakhshan Abbas | vault-screen-extras | Search, filter, categories |
 
