@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import random
 import string
+from password_utils import generate_password
 
 class GeneratorScreen(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -45,8 +46,8 @@ class GeneratorScreen(tk.Frame):
             row=5, column=0, sticky="w", padx=20
         )
 
-        # --- Generate button (placeholder for now) ---
-        tk.Button(self, text="Generate Password", state="disabled").grid(
+        # --- Generate button ---
+        tk.Button(self, text="Generate Password", command=self.on_generate).grid(
             row=6, column=0, columnspan=2, pady=10
         )
 
@@ -56,3 +57,13 @@ class GeneratorScreen(tk.Frame):
         tk.Entry(self, textvariable=self.output_var, state="readonly", width=35).grid(
             row=8, column=0, columnspan=2, padx=20, pady=5
         )
+
+    def on_generate(self):
+        length = self.length_var.get()
+        password = generate_password(
+            length=length,
+            use_digits=self.use_digits.get(),
+            use_symbols=self.use_symbols.get(),
+            use_upper=self.use_upper.get()
+        )
+        self.output_var.set(password)
