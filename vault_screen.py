@@ -31,3 +31,18 @@ class VaultScreen:
         ]
         for item in sample_data:
             self.tree.insert("", "end", values=item)
+            # Buttons Frame
+        btn_frame = tk.Frame(root)
+        btn_frame.pack(pady=10)
+
+        # Add Entry Button
+        add_btn = tk.Button(btn_frame, text="Add Entry", width=15, bg="green", fg="white")
+        add_btn.grid(row=0, column=0, padx=10)
+
+        # Delete Entry Button
+        delete_btn = tk.Button(btn_frame, text="Delete Entry", width=15, bg="red", fg="white")
+        delete_btn.grid(row=0, column=1, padx=10)
+
+        # Copy Password Button
+        copy_btn = tk.Button(btn_frame, text="Copy Password", width=15, bg="blue", fg="white")
+        copy_btn.grid(row=0, column=2, padx=10)
