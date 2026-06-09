@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import random
 import string
+import pyperclip
 from password_utils import generate_password, check_strength
 
 class GeneratorScreen(tk.Frame):
@@ -63,6 +64,33 @@ class GeneratorScreen(tk.Frame):
         self.strength_label = tk.Label(self, text="—", font=("Arial", 11, "bold"))
         self.strength_label.grid(row=9, column=1, sticky="w")
 
+        # --- Copy button ---
+        tk.Button(self, text="Copy Password", command=self.copy_password).grid(
+            row=10, column=0, columnspan=2, pady=(5, 15)
+        )
+
+        # --- Divider ---
+        tk.Label(self, text="─────────────────────────────", fg="gray").grid(
+            row=11, column=0, columnspan=2
+        )
+
+        # --- HIBP section ---
+        tk.Label(self, text="Check if a password was leaked:", font=("Arial", 11, "bold")).grid(
+            row=12, column=0, columnspan=2, pady=(10, 5)
+        )
+
+        self.check_input_var = tk.StringVar()
+        tk.Entry(self, textvariable=self.check_input_var, width=35).grid(
+            row=13, column=0, columnspan=2, padx=20
+        )
+
+        tk.Button(self, text="Check Password", command=self.check_breach).grid(
+            row=14, column=0, columnspan=2, pady=8
+        )
+
+        self.breach_result_label = tk.Label(self, text="", font=("Arial", 10))
+        self.breach_result_label.grid(row=15, column=0, columnspan=2)
+
     def on_generate(self):
         length = self.length_var.get()
         password = generate_password(
@@ -77,3 +105,15 @@ class GeneratorScreen(tk.Frame):
         strength = check_strength(password)
         colors = {"Weak": "red", "Medium": "orange", "Strong": "green"}
         self.strength_label.config(text=strength, fg=colors[strength])
+
+    def copy_password(self):
+        password = self.output_var.get()
+        if password:
+            pyperclip.copy(password)
+
+    def check_breach(self):
+        # Placeholder — will connect to Fatimah's backend function later
+        self.breach_result_label.config(
+            text="HIBP check coming soon (backend integration pending)",
+            fg="gray"
+        )
