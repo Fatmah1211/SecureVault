@@ -75,11 +75,11 @@ count = check_password_breached("password123")
 
 | Member | Branch | Responsibility |
 |--------|--------|---------------|
-| Fatimah | backend + integration | Database, encryption, HIBP, merging |
-| Member 2 | login-screen | Login and register screen |
-| Member 3 | vault-screen | Password vault screen |
-| Member 4 | generator-screen | Password generator screen |
-| Member 5 | vault-screen-extras | Search, filter, categories |
+| Fatmah Tahir | backend + integration | Database, encryption, HIBP, merging |
+| Fizzah Ahsan | login-screen | Login and register screen |
+|  | vault-screen | Password vault screen |
+| Maida Saleem | generator-screen | Password generator screen |
+| Drakhshan Abbas | vault-screen-extras | Search, filter, categories |
 
 ## Screenshots
 Coming soon.
