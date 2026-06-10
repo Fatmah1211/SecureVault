@@ -47,7 +47,7 @@ class VaultScreen:
         delete_btn.grid(row=0, column=1, padx=10)
 
         # Copy Password Button
-        copy_btn = tk.Button(btn_frame, text="Copy Password", width=15, bg="blue", fg="white")
+        copy_btn = tk.Button(btn_frame, text="Copy Password", width=15, bg="blue", fg="white", command=self.copy_password)
         copy_btn.grid(row=0, column=2, padx=10)
 
         # Show/Hide Password Button
@@ -71,3 +71,11 @@ class VaultScreen:
         selected = self.tree.selection()
         if selected:
             self.tree.delete(selected)
+
+    def copy_password(self):
+        selected = self.tree.selection()
+        if selected:
+            item = self.tree.item(selected)
+            password = item["values"][2]
+            self.root.clipboard_clear()
+            self.root.clipboard_append(password)
