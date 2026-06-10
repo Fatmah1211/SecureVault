@@ -127,3 +127,12 @@ def get_passwords_by_category(user_id, category):
     rows = cursor.fetchall()
     conn.close()
     return rows
+    def get_all_categories(user_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT DISTINCT category FROM passwords WHERE user_id = ?
+    ''', (user_id,))
+    categories = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    return categories
