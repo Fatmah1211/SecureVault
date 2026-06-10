@@ -3,7 +3,7 @@ from tkinter import ttk
 import random
 import string
 import pyperclip
-from password_utils import generate_password, check_strength
+from password_utils import generate_password, check_strength, check_hibp
 
 class GeneratorScreen(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -112,8 +112,32 @@ class GeneratorScreen(tk.Frame):
             pyperclip.copy(password)
 
     def check_breach(self):
-        # Placeholder — will connect to Fatimah's backend function later
-        self.breach_result_label.config(
-            text="HIBP check coming soon (backend integration pending)",
-            fg="gray"
-        )
+        password = self.check_input_var.get().strip()
+
+        if not password:
+            self.breach_result_label.config(
+                text="Please enter a password to check.", fg="gray"
+            )
+            return
+
+        self.breach_result_label.config(text="Checking...", fg="gray")
+        self.update()
+
+        result = check_hibp(password)
+
+        if result == "error":
+            self.breach_result_label.config(
+                text="API error. Try again later.", fg="orange"
+            )
+        elif result == "offline":
+            self.breach_result_label.config(
+                text="No internet connection.", fg="orange"
+            )
+        elif result == 0:
+            self.breach_result_label.config(
+                text="✔ This password has not been leaked!", fg="green"
+            )
+        else:
+            self.breach_result_label.config(
+                text=f"⚠ WARNING: Found {result} times in data breaches!", fg="red"
+            )
