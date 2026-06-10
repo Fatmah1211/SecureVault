@@ -128,7 +128,9 @@ class VaultScreen:
                 messagebox.showwarning("Warning", "Please fill all fields!")
 
         tk.Button(popup, text="Save", bg="green", fg="white", command=save).grid(row=3, column=1, pady=10)
-
+def show_empty_message(self):
+        if not self.tree.get_children():
+            tk.Label(self.root, text="No entries found!", font=("Arial", 12), fg="gray").pack(pady=5)
 
 if __name__ == "__main__":
     root = tk.Tk()
