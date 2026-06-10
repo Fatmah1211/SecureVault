@@ -20,6 +20,8 @@ class VaultScreen:
         self.search_var.trace("w", self.search_entries)
         search_entry = tk.Entry(search_frame, textvariable=self.search_var, width=30)
         search_entry.pack(side="left", padx=5)
+        clear_btn = tk.Button(search_frame, text="Clear", bg="gray", fg="white", command=self.clear_search)
+        clear_btn.pack(side="left", padx=5)
 
         # Table Frame
         frame = tk.Frame(root)
@@ -68,6 +70,13 @@ class VaultScreen:
         for entry in self.all_data:
             if query in entry[0].lower():
                 self.tree.insert("", "end", values=entry)
+
+    def clear_search(self):
+        self.search_var.set("")
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        for entry in self.all_data:
+            self.tree.insert("", "end", values=entry)
 
     def toggle_password(self):
         if self.show_pass:
@@ -128,9 +137,11 @@ class VaultScreen:
                 messagebox.showwarning("Warning", "Please fill all fields!")
 
         tk.Button(popup, text="Save", bg="green", fg="white", command=save).grid(row=3, column=1, pady=10)
-def show_empty_message(self):
+
+    def show_empty_message(self):
         if not self.tree.get_children():
             tk.Label(self.root, text="No entries found!", font=("Arial", 12), fg="gray").pack(pady=5)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
