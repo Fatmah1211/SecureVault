@@ -155,7 +155,22 @@ class VaultScreen:
         if not self.tree.get_children():
             tk.Label(self.root, text="No entries found!", font=("Arial", 12), fg="gray", bg="#f0f0f0").pack(pady=5)
 
+def filter_by_category(self, category):
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+        for entry in self.all_entries:
+            if category == "All" or (len(entry) > 3 and entry[3] == category):
+                self.tree.insert("", "end", values=entry)
 
+    def add_category_dropdown(self):
+        category_frame = tk.Frame(self.root, bg="#f0f0f0")
+        category_frame.pack(pady=5)
+        tk.Label(category_frame, text="Category:", bg="#f0f0f0", font=("Arial", 11)).pack(side="left", padx=5)
+        self.category_var = tk.StringVar(value="All")
+        category_menu = ttk.Combobox(category_frame, textvariable=self.category_var,
+            values=["All", "Social Media", "Banking", "Email", "Work", "Other"], width=15)
+        category_menu.pack(side="left", padx=5)
+        category_menu.bind("<<ComboboxSelected>>", lambda e: self.filter_by_category(self.category_var.get()))
 if __name__ == "__main__":
     root = tk.Tk()
     app = VaultScreen(root)
