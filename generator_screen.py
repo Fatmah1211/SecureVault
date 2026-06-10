@@ -47,9 +47,15 @@ class GeneratorScreen(tk.Frame):
             row=5, column=0, sticky="w", padx=20
         )
 
-        # --- Generate button ---
-        tk.Button(self, text="Generate Password", command=self.on_generate).grid(
-            row=6, column=0, columnspan=2, pady=10
+        # --- Generate + Clear buttons side by side ---
+        btn_frame = tk.Frame(self)
+        btn_frame.grid(row=6, column=0, columnspan=2, pady=10)
+
+        tk.Button(btn_frame, text="Generate Password", command=self.on_generate).pack(
+            side="left", padx=10
+        )
+        tk.Button(btn_frame, text="Clear", command=self.clear_all, fg="red").pack(
+            side="left", padx=10
         )
 
         # --- Output field ---
@@ -105,6 +111,18 @@ class GeneratorScreen(tk.Frame):
         strength = check_strength(password)
         colors = {"Weak": "red", "Medium": "orange", "Strong": "green"}
         self.strength_label.config(text=strength, fg=colors[strength])
+
+    def clear_all(self):
+        # Reset everything back to default
+        self.output_var.set("")
+        self.strength_label.config(text="—", fg="black")
+        self.check_input_var.set("")
+        self.breach_result_label.config(text="")
+        self.length_var.set(12)
+        self.length_label.config(text="12")
+        self.use_digits.set(True)
+        self.use_symbols.set(True)
+        self.use_upper.set(True)
 
     def copy_password(self):
         password = self.output_var.get()
