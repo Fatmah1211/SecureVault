@@ -85,22 +85,18 @@ class VaultScreen:
         popup.title("Add New Entry")
         popup.geometry("300x200")
 
-        # Website field
         tk.Label(popup, text="Website:").grid(row=0, column=0, padx=10, pady=5)
         website_entry = tk.Entry(popup, width=25)
         website_entry.grid(row=0, column=1, padx=10, pady=5)
 
-        # Username field
         tk.Label(popup, text="Username:").grid(row=1, column=0, padx=10, pady=5)
         username_entry = tk.Entry(popup, width=25)
         username_entry.grid(row=1, column=1, padx=10, pady=5)
 
-        # Password field
         tk.Label(popup, text="Password:").grid(row=2, column=0, padx=10, pady=5)
         password_entry = tk.Entry(popup, width=25, show="*")
         password_entry.grid(row=2, column=1, padx=10, pady=5)
 
-        # Save button
         def save():
             website = website_entry.get()
             username = username_entry.get()
@@ -110,3 +106,9 @@ class VaultScreen:
                 popup.destroy()
 
         tk.Button(popup, text="Save", bg="green", fg="white", command=save).grid(row=3, column=1, pady=10)
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = VaultScreen(root)
+    root.mainloop()
