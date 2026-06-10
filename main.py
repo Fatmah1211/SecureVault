@@ -1,4 +1,4 @@
-from securevault.database import initialize_database, register_user, login_user, save_password, get_passwords, delete_password
+from securevault.database import initialize_database, register_user, login_user, save_password, get_passwords, delete_password, update_password, search_passwords, get_password_by_id, get_passwords_by_category
 from securevault.encryption import generate_key, encrypt_password, decrypt_password, hash_password
 from securevault.hibp import check_password_breached
 
@@ -35,6 +35,21 @@ def test():
         print("Password is clean")
     else:
         print(f"Password breached {count} times!")
+    # Test search
+    results = search_passwords(user_id, "face")
+    print(f"Search results: {len(results)} found")
+
+    # Test get by id
+    entry = get_password_by_id(1)
+    print(f"Entry by id: {entry}")
+
+    # Test update
+    update_password(1, "facebook.com", "newuser@email.com", encrypt_password("newpass456"), "Social")
+    print("Password updated successfully")
+
+    # Test category filter
+    social = get_passwords_by_category(user_id, "Social")
+    print(f"Social passwords: {len(social)} found")
 
 if __name__ == "__main__":
     test()
