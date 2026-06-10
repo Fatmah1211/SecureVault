@@ -1,0 +1,119 @@
+import tkinter as tk
+from tkinter import ttk
+import random
+import string
+import pyperclip
+from password_utils import generate_password, check_strength
+
+class GeneratorScreen(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.build_ui()
+
+    def build_ui(self):
+        # --- Title ---
+        tk.Label(self, text="Password Generator", font=("Arial", 16, "bold")).grid(
+            row=0, column=0, columnspan=2, pady=(20, 10)
+        )
+
+        # --- Length label + slider ---
+        tk.Label(self, text="Password Length:").grid(row=1, column=0, sticky="w", padx=20)
+
+        self.length_var = tk.IntVar(value=12)
+        self.length_label = tk.Label(self, text="12")
+        self.length_label.grid(row=1, column=1, sticky="w")
+
+        self.length_slider = ttk.Scale(
+            self, from_=8, to=32,
+            variable=self.length_var,
+            orient="horizontal",
+            length=250,
+            command=lambda val: self.length_label.config(text=str(int(float(val))))
+        )
+        self.length_slider.grid(row=2, column=0, columnspan=2, padx=20, pady=5)
+
+        # --- Checkboxes ---
+        self.use_digits = tk.BooleanVar(value=True)
+        self.use_symbols = tk.BooleanVar(value=True)
+        self.use_upper = tk.BooleanVar(value=True)
+
+        tk.Checkbutton(self, text="Include Numbers (0-9)", variable=self.use_digits).grid(
+            row=3, column=0, sticky="w", padx=20
+        )
+        tk.Checkbutton(self, text="Include Symbols (!@#...)", variable=self.use_symbols).grid(
+            row=4, column=0, sticky="w", padx=20
+        )
+        tk.Checkbutton(self, text="Include Uppercase (A-Z)", variable=self.use_upper).grid(
+            row=5, column=0, sticky="w", padx=20
+        )
+
+        # --- Generate button ---
+        tk.Button(self, text="Generate Password", command=self.on_generate).grid(
+            row=6, column=0, columnspan=2, pady=10
+        )
+
+        # --- Output field ---
+        tk.Label(self, text="Generated Password:").grid(row=7, column=0, sticky="w", padx=20)
+        self.output_var = tk.StringVar()
+        tk.Entry(self, textvariable=self.output_var, state="readonly", width=35).grid(
+            row=8, column=0, columnspan=2, padx=20, pady=5
+        )
+
+        # --- Strength indicator ---
+        tk.Label(self, text="Password Strength:").grid(row=9, column=0, sticky="w", padx=20)
+        self.strength_label = tk.Label(self, text="—", font=("Arial", 11, "bold"))
+        self.strength_label.grid(row=9, column=1, sticky="w")
+
+        # --- Copy button ---
+        tk.Button(self, text="Copy Password", command=self.copy_password).grid(
+            row=10, column=0, columnspan=2, pady=(5, 15)
+        )
+
+        # --- Divider ---
+        tk.Label(self, text="─────────────────────────────", fg="gray").grid(
+            row=11, column=0, columnspan=2
+        )
+
+        # --- HIBP section ---
+        tk.Label(self, text="Check if a password was leaked:", font=("Arial", 11, "bold")).grid(
+            row=12, column=0, columnspan=2, pady=(10, 5)
+        )
+
+        self.check_input_var = tk.StringVar()
+        tk.Entry(self, textvariable=self.check_input_var, width=35).grid(
+            row=13, column=0, columnspan=2, padx=20
+        )
+
+        tk.Button(self, text="Check Password", command=self.check_breach).grid(
+            row=14, column=0, columnspan=2, pady=8
+        )
+
+        self.breach_result_label = tk.Label(self, text="", font=("Arial", 10))
+        self.breach_result_label.grid(row=15, column=0, columnspan=2)
+
+    def on_generate(self):
+        length = self.length_var.get()
+        password = generate_password(
+            length=length,
+            use_digits=self.use_digits.get(),
+            use_symbols=self.use_symbols.get(),
+            use_upper=self.use_upper.get()
+        )
+        self.output_var.set(password)
+
+        # Strength check
+        strength = check_strength(password)
+        colors = {"Weak": "red", "Medium": "orange", "Strong": "green"}
+        self.strength_label.config(text=strength, fg=colors[strength])
+
+    def copy_password(self):
+        password = self.output_var.get()
+        if password:
+            pyperclip.copy(password)
+
+    def check_breach(self):
+        # Placeholder — will connect to Fatimah's backend function later
+        self.breach_result_label.config(
+            text="HIBP check coming soon (backend integration pending)",
+            fg="gray"
+        )
