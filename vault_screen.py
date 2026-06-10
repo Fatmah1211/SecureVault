@@ -39,7 +39,7 @@ class VaultScreen:
         btn_frame.pack(pady=10)
 
         # Add Entry Button
-        add_btn = tk.Button(btn_frame, text="Add Entry", width=15, bg="green", fg="white")
+        add_btn = tk.Button(btn_frame, text="Add Entry", width=15, bg="green", fg="white", command=self.add_entry)
         add_btn.grid(row=0, column=0, padx=10)
 
         # Delete Entry Button
@@ -79,3 +79,34 @@ class VaultScreen:
             password = item["values"][2]
             self.root.clipboard_clear()
             self.root.clipboard_append(password)
+
+    def add_entry(self):
+        popup = tk.Toplevel(self.root)
+        popup.title("Add New Entry")
+        popup.geometry("300x200")
+
+        # Website field
+        tk.Label(popup, text="Website:").grid(row=0, column=0, padx=10, pady=5)
+        website_entry = tk.Entry(popup, width=25)
+        website_entry.grid(row=0, column=1, padx=10, pady=5)
+
+        # Username field
+        tk.Label(popup, text="Username:").grid(row=1, column=0, padx=10, pady=5)
+        username_entry = tk.Entry(popup, width=25)
+        username_entry.grid(row=1, column=1, padx=10, pady=5)
+
+        # Password field
+        tk.Label(popup, text="Password:").grid(row=2, column=0, padx=10, pady=5)
+        password_entry = tk.Entry(popup, width=25, show="*")
+        password_entry.grid(row=2, column=1, padx=10, pady=5)
+
+        # Save button
+        def save():
+            website = website_entry.get()
+            username = username_entry.get()
+            password = password_entry.get()
+            if website and username and password:
+                self.tree.insert("", "end", values=(website, username, "••••••"))
+                popup.destroy()
+
+        tk.Button(popup, text="Save", bg="green", fg="white", command=save).grid(row=3, column=1, pady=10)
