@@ -9,6 +9,7 @@ class GeneratorScreen(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.password_visible = False
+        self.password_history = []
         self.build_ui()
 
     def build_ui(self):
@@ -102,29 +103,38 @@ class GeneratorScreen(tk.Frame):
 
         # --- Copy confirmation ---
         self.copy_confirm_label = tk.Label(self, text="", font=("Arial", 9), fg="green")
-        self.copy_confirm_label.grid(row=12, column=0, columnspan=2, pady=(0, 10))
+        self.copy_confirm_label.grid(row=12, column=0, columnspan=2, pady=(0, 5))
+
+        # --- Password History ---
+        tk.Label(self, text="Recent Passwords:", font=("Arial", 10, "bold")).grid(
+            row=13, column=0, sticky="w", padx=20, pady=(5, 2)
+        )
+        self.history_listbox = tk.Listbox(
+            self, height=5, width=40, font=("Courier", 9)
+        )
+        self.history_listbox.grid(row=14, column=0, columnspan=2, padx=20, pady=(0, 10))
 
         # --- Divider ---
         tk.Label(self, text="─────────────────────────────", fg="gray").grid(
-            row=13, column=0, columnspan=2
+            row=15, column=0, columnspan=2
         )
 
         # --- HIBP section ---
         tk.Label(self, text="Check any password for leaks:", font=("Arial", 11, "bold")).grid(
-            row=14, column=0, columnspan=2, pady=(10, 5)
+            row=16, column=0, columnspan=2, pady=(10, 5)
         )
 
         self.check_input_var = tk.StringVar()
         tk.Entry(self, textvariable=self.check_input_var, width=35).grid(
-            row=15, column=0, columnspan=2, padx=20
+            row=17, column=0, columnspan=2, padx=20
         )
 
         tk.Button(self, text="Check Password", command=self.check_breach).grid(
-            row=16, column=0, columnspan=2, pady=8
+            row=18, column=0, columnspan=2, pady=8
         )
 
         self.breach_result_label = tk.Label(self, text="", font=("Arial", 10))
-        self.breach_result_label.grid(row=17, column=0, columnspan=2)
+        self.breach_result_label.grid(row=19, column=0, columnspan=2)
 
     def update_length_label(self, val):
         length = int(float(val))
@@ -150,6 +160,7 @@ class GeneratorScreen(tk.Frame):
             use_upper=self.use_upper.get()
         )
         self.output_var.set(password)
+
         # Reset to hidden on each new generation
         self.output_entry.config(show="*")
         self.toggle_btn.config(text="Show")
@@ -162,6 +173,17 @@ class GeneratorScreen(tk.Frame):
 
         # Clear previous breach result
         self.breach_result_label.config(text="")
+
+        # Add to history — keep only last 5
+        self.password_history.insert(0, password)
+        self.password_history = self.password_history[:5]
+        self.update_history()
+
+    def update_history(self):
+        self.history_listbox.delete(0, tk.END)
+        for pwd in self.password_history:
+            # Show as hidden in history too
+            self.history_listbox.insert(tk.END, "*" * len(pwd))
 
     def clear_all(self):
         self.output_var.set("")
@@ -178,6 +200,8 @@ class GeneratorScreen(tk.Frame):
         self.use_digits.set(True)
         self.use_symbols.set(True)
         self.use_upper.set(True)
+        self.password_history = []
+        self.history_listbox.delete(0, tk.END)
 
     def copy_password(self):
         password = self.output_var.get()
@@ -187,7 +211,6 @@ class GeneratorScreen(tk.Frame):
             self.after(2000, lambda: self.copy_confirm_label.config(text=""))
 
     def check_generated_password(self):
-        # Sends the generated password directly to HIBP check
         password = self.output_var.get()
         if not password:
             self.breach_result_label.config(
