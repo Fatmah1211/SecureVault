@@ -1,3 +1,9 @@
+# generator_screen.py
+# Member 4 — Password Generator Screen
+# Part of SecureVault project
+# This screen handles password generation, strength checking,
+# clipboard copy, breach detection via HIBP API, and password history.
+
 import tkinter as tk
 from tkinter import ttk
 import random
@@ -5,20 +11,21 @@ import string
 import pyperclip
 from password_utils import generate_password, check_strength, check_hibp
 
+
 class GeneratorScreen(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.password_visible = False
-        self.password_history = []
+        self.password_visible = False  # tracks show/hide state
+        self.password_history = []     # stores last 5 generated passwords
         self.build_ui()
 
     def build_ui(self):
-        # --- Title ---
+        # ── Title ──────────────────────────────────────────────────
         tk.Label(self, text="Password Generator", font=("Arial", 16, "bold")).grid(
             row=0, column=0, columnspan=2, pady=(20, 10)
         )
 
-        # --- Length label + slider ---
+        # ── Length slider ──────────────────────────────────────────
         tk.Label(self, text="Password Length:").grid(row=1, column=0, sticky="w", padx=20)
 
         self.length_var = tk.IntVar(value=12)
@@ -34,13 +41,13 @@ class GeneratorScreen(tk.Frame):
         )
         self.length_slider.grid(row=2, column=0, columnspan=2, padx=20, pady=5)
 
-        # --- Live character count ---
+        # Live character count below slider
         self.char_count_label = tk.Label(
             self, text="Length: 12 characters", fg="gray", font=("Arial", 9)
         )
         self.char_count_label.grid(row=3, column=0, columnspan=2)
 
-        # --- Checkboxes ---
+        # ── Character type options ─────────────────────────────────
         self.use_digits = tk.BooleanVar(value=True)
         self.use_symbols = tk.BooleanVar(value=True)
         self.use_upper = tk.BooleanVar(value=True)
@@ -55,7 +62,7 @@ class GeneratorScreen(tk.Frame):
             row=6, column=0, sticky="w", padx=20
         )
 
-        # --- Generate + Clear buttons side by side ---
+        # ── Generate + Clear buttons ───────────────────────────────
         btn_frame = tk.Frame(self)
         btn_frame.grid(row=7, column=0, columnspan=2, pady=10)
 
@@ -66,7 +73,7 @@ class GeneratorScreen(tk.Frame):
             side="left", padx=10
         )
 
-        # --- Output field with show/hide toggle ---
+        # ── Output field with show/hide toggle ─────────────────────
         tk.Label(self, text="Generated Password:").grid(row=8, column=0, sticky="w", padx=20)
 
         output_frame = tk.Frame(self)
@@ -84,12 +91,12 @@ class GeneratorScreen(tk.Frame):
         )
         self.toggle_btn.pack(side="left", padx=(5, 0))
 
-        # --- Strength indicator ---
+        # ── Strength indicator ─────────────────────────────────────
         tk.Label(self, text="Password Strength:").grid(row=10, column=0, sticky="w", padx=20)
         self.strength_label = tk.Label(self, text="—", font=("Arial", 11, "bold"))
         self.strength_label.grid(row=10, column=1, sticky="w")
 
-        # --- Copy + Check breach buttons side by side ---
+        # ── Copy + Check breach buttons ────────────────────────────
         action_frame = tk.Frame(self)
         action_frame.grid(row=11, column=0, columnspan=2, pady=(5, 5))
 
@@ -101,11 +108,11 @@ class GeneratorScreen(tk.Frame):
             command=self.check_generated_password, fg="darkred"
         ).pack(side="left", padx=10)
 
-        # --- Copy confirmation ---
+        # Confirmation message shown after copying
         self.copy_confirm_label = tk.Label(self, text="", font=("Arial", 9), fg="green")
         self.copy_confirm_label.grid(row=12, column=0, columnspan=2, pady=(0, 5))
 
-        # --- Password History ---
+        # ── Password history (last 5) ──────────────────────────────
         tk.Label(self, text="Recent Passwords:", font=("Arial", 10, "bold")).grid(
             row=13, column=0, sticky="w", padx=20, pady=(5, 2)
         )
@@ -114,12 +121,12 @@ class GeneratorScreen(tk.Frame):
         )
         self.history_listbox.grid(row=14, column=0, columnspan=2, padx=20, pady=(0, 10))
 
-        # --- Divider ---
+        # ── Divider ────────────────────────────────────────────────
         tk.Label(self, text="─────────────────────────────", fg="gray").grid(
             row=15, column=0, columnspan=2
         )
 
-        # --- HIBP section ---
+        # ── HIBP breach check section ──────────────────────────────
         tk.Label(self, text="Check any password for leaks:", font=("Arial", 11, "bold")).grid(
             row=16, column=0, columnspan=2, pady=(10, 5)
         )
@@ -136,12 +143,16 @@ class GeneratorScreen(tk.Frame):
         self.breach_result_label = tk.Label(self, text="", font=("Arial", 10))
         self.breach_result_label.grid(row=19, column=0, columnspan=2)
 
+    # ── Methods ────────────────────────────────────────────────────
+
     def update_length_label(self, val):
+        # Updates the length number and character count label as slider moves
         length = int(float(val))
         self.length_label.config(text=str(length))
         self.char_count_label.config(text=f"Length: {length} characters")
 
     def toggle_password_visibility(self):
+        # Toggles between showing and hiding the generated password
         if self.password_visible:
             self.output_entry.config(show="*")
             self.toggle_btn.config(text="Show")
@@ -152,7 +163,7 @@ class GeneratorScreen(tk.Frame):
             self.password_visible = True
 
     def on_generate(self):
-        # --- Validation check ---
+        # Validates options then generates a password
         if not self.use_digits.get() and not self.use_symbols.get() and not self.use_upper.get():
             self.strength_label.config(text="Select at least one option!", fg="red")
             return
@@ -171,7 +182,7 @@ class GeneratorScreen(tk.Frame):
         self.toggle_btn.config(text="Show")
         self.password_visible = False
 
-        # Strength check
+        # Update strength indicator
         strength = check_strength(password)
         colors = {"Weak": "red", "Medium": "orange", "Strong": "green"}
         self.strength_label.config(text=strength, fg=colors[strength])
@@ -179,18 +190,19 @@ class GeneratorScreen(tk.Frame):
         # Clear previous breach result
         self.breach_result_label.config(text="")
 
-        # Add to history — keep only last 5
+        # Add to history and keep only last 5
         self.password_history.insert(0, password)
         self.password_history = self.password_history[:5]
         self.update_history()
 
     def update_history(self):
+        # Refreshes the history listbox with latest passwords (shown as asterisks)
         self.history_listbox.delete(0, tk.END)
         for pwd in self.password_history:
-            # Show as hidden in history too
             self.history_listbox.insert(tk.END, "*" * len(pwd))
 
     def clear_all(self):
+        # Resets all fields and state back to default
         self.output_var.set("")
         self.output_entry.config(show="*")
         self.toggle_btn.config(text="Show")
@@ -209,6 +221,7 @@ class GeneratorScreen(tk.Frame):
         self.history_listbox.delete(0, tk.END)
 
     def copy_password(self):
+        # Copies generated password to clipboard and shows confirmation
         password = self.output_var.get()
         if password:
             pyperclip.copy(password)
@@ -216,6 +229,7 @@ class GeneratorScreen(tk.Frame):
             self.after(2000, lambda: self.copy_confirm_label.config(text=""))
 
     def check_generated_password(self):
+        # Sends the generated password directly to the breach check
         password = self.output_var.get()
         if not password:
             self.breach_result_label.config(
@@ -226,6 +240,7 @@ class GeneratorScreen(tk.Frame):
         self.check_breach()
 
     def check_breach(self):
+        # Checks any password against the HaveIBeenPwned API
         password = self.check_input_var.get().strip()
 
         if not password:
