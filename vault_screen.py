@@ -64,6 +64,8 @@ class VaultScreen:
 
         sort_btn = tk.Button(btn_frame, text="Sort A-Z", width=15, bg="#6f42c1", fg="white", font=("Arial", 10, "bold"), command=self.sort_by_website)
         sort_btn.grid(row=0, column=4, padx=10)
+        edit_btn = tk.Button(btn_frame, text="Edit Entry", width=15, bg="#17a2b8", fg="white", font=("Arial", 10, "bold"), command=self.edit_entry)
+        edit_btn.grid(row=1, column=0, padx=10, pady=5)
 
     def search_entries(self, *args):
         query = self.search_var.get().lower()
@@ -154,6 +156,49 @@ class VaultScreen:
     def sort_by_website(self):
         self.all_data.sort(key=lambda x: x[0].lower())
         self.refresh_table()
+    def edit_entry(self):
+        selected = self.tree.selection()
+        if not selected:
+            messagebox.showwarning("Warning", "Please select an entry to edit!")
+            return
+        item = self.tree.item(selected)
+        old_website = item["values"][0]
+        old_username = item["values"][1]
+        idx = [d[0] for d in self.all_data].index(old_website)
+        old_password = self.all_data[idx][2]
+
+        popup = tk.Toplevel(self.root)
+        popup.title("Edit Entry")
+        popup.geometry("320x220")
+        popup.config(bg="#f0f0f0")
+
+        tk.Label(popup, text="Website:", bg="#f0f0f0", font=("Arial", 11)).grid(row=0, column=0, padx=10, pady=8)
+        website_entry = tk.Entry(popup, width=25, font=("Arial", 11))
+        website_entry.insert(0, old_website)
+        website_entry.grid(row=0, column=1, padx=10, pady=8)
+
+        tk.Label(popup, text="Username:", bg="#f0f0f0", font=("Arial", 11)).grid(row=1, column=0, padx=10, pady=8)
+        username_entry = tk.Entry(popup, width=25, font=("Arial", 11))
+        username_entry.insert(0, old_username)
+        username_entry.grid(row=1, column=1, padx=10, pady=8)
+
+        tk.Label(popup, text="Password:", bg="#f0f0f0", font=("Arial", 11)).grid(row=2, column=0, padx=10, pady=8)
+        password_entry = tk.Entry(popup, width=25, show="*", font=("Arial", 11))
+        password_entry.insert(0, old_password)
+        password_entry.grid(row=2, column=1, padx=10, pady=8)
+
+        def update():
+            new_website = website_entry.get()
+            new_username = username_entry.get()
+            new_password = password_entry.get()
+            if new_website and new_username and new_password:
+                self.all_data[idx] = (new_website, new_username, new_password)
+                self.refresh_table()
+                popup.destroy()
+            else:
+                messagebox.showwarning("Warning", "Please fill all fields!")
+
+        tk.Button(popup, text="Update", bg="#007bff", fg="white", font=("Arial", 11, "bold"), command=update).grid(row=3, column=1, pady=10)
 
     def show_empty_message(self):
         if not self.tree.get_children():
