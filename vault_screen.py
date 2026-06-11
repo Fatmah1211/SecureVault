@@ -9,11 +9,9 @@ class VaultScreen:
         self.root.geometry("800x500")
         self.root.config(bg="#f0f0f0")
 
-        # Title Label
         title = tk.Label(root, text="My Password Vault", font=("Arial", 20, "bold"), bg="#f0f0f0", fg="#333333")
         title.pack(pady=10)
 
-        # Search Bar
         search_frame = tk.Frame(root, bg="#f0f0f0")
         search_frame.pack(pady=5)
         tk.Label(search_frame, text="Search:", bg="#f0f0f0", font=("Arial", 11)).pack(side="left", padx=5)
@@ -24,11 +22,9 @@ class VaultScreen:
         clear_btn = tk.Button(search_frame, text="Clear", bg="gray", fg="white", command=self.clear_search)
         clear_btn.pack(side="left", padx=5)
 
-        # Table Frame
         frame = tk.Frame(root)
         frame.pack(pady=10, fill="both", expand=True)
 
-        # Treeview Table styling
         style = ttk.Style()
         style.configure("Treeview", rowheight=28, font=("Arial", 11))
         style.configure("Treeview.Heading", font=("Arial", 12, "bold"))
@@ -42,7 +38,6 @@ class VaultScreen:
         self.tree.column("Password", width=220)
         self.tree.pack(fill="both", expand=True)
 
-        # Sample Data
         self.all_data = [
             ("facebook.com", "ayesha123", "pass123"),
             ("gmail.com", "ayesha@gmail.com", "gmail456"),
@@ -51,7 +46,6 @@ class VaultScreen:
         for item in self.all_data:
             self.tree.insert("", "end", values=(item[0], item[1], "••••••"))
 
-        # Buttons Frame
         btn_frame = tk.Frame(root, bg="#f0f0f0")
         btn_frame.pack(pady=10)
 
@@ -68,6 +62,9 @@ class VaultScreen:
         self.show_btn = tk.Button(btn_frame, text="Show Password", width=15, bg="#fd7e14", fg="white", font=("Arial", 10, "bold"), command=self.toggle_password)
         self.show_btn.grid(row=0, column=3, padx=10)
 
+        sort_btn = tk.Button(btn_frame, text="Sort A-Z", width=15, bg="#6f42c1", fg="white", font=("Arial", 10, "bold"), command=self.sort_by_website)
+        sort_btn.grid(row=0, column=4, padx=10)
+
     def search_entries(self, *args):
         query = self.search_var.get().lower()
         for item in self.tree.get_children():
@@ -78,10 +75,7 @@ class VaultScreen:
 
     def clear_search(self):
         self.search_var.set("")
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-        for entry in self.all_data:
-            self.tree.insert("", "end", values=(entry[0], entry[1], "••••••"))
+        self.refresh_table()
 
     def toggle_password(self):
         if self.show_pass:
@@ -151,14 +145,20 @@ class VaultScreen:
 
         tk.Button(popup, text="Save", bg="#28a745", fg="white", font=("Arial", 11, "bold"), command=save).grid(row=3, column=1, pady=10)
 
-    def show_empty_message(self):
-        if not self.tree.get_children():
-            tk.Label(self.root, text="No entries found!", font=("Arial", 12), fg="gray", bg="#f0f0f0").pack(pady=5)
-def refresh_table(self):
+    def refresh_table(self):
         for item in self.tree.get_children():
             self.tree.delete(item)
         for entry in self.all_data:
             self.tree.insert("", "end", values=(entry[0], entry[1], "••••••"))
+
+    def sort_by_website(self):
+        self.all_data.sort(key=lambda x: x[0].lower())
+        self.refresh_table()
+
+    def show_empty_message(self):
+        if not self.tree.get_children():
+            tk.Label(self.root, text="No entries found!", font=("Arial", 12), fg="gray", bg="#f0f0f0").pack(pady=5)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
