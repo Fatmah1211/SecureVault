@@ -88,10 +88,19 @@ class GeneratorScreen(tk.Frame):
         self.strength_label = tk.Label(self, text="—", font=("Arial", 11, "bold"))
         self.strength_label.grid(row=10, column=1, sticky="w")
 
-        # --- Copy button + confirmation ---
-        tk.Button(self, text="Copy Password", command=self.copy_password).grid(
-            row=11, column=0, columnspan=2, pady=(5, 5)
+        # --- Copy + Check breach buttons side by side ---
+        action_frame = tk.Frame(self)
+        action_frame.grid(row=11, column=0, columnspan=2, pady=(5, 5))
+
+        tk.Button(action_frame, text="Copy Password", command=self.copy_password).pack(
+            side="left", padx=10
         )
+        tk.Button(
+            action_frame, text="Check for Breach",
+            command=self.check_generated_password, fg="darkred"
+        ).pack(side="left", padx=10)
+
+        # --- Copy confirmation ---
         self.copy_confirm_label = tk.Label(self, text="", font=("Arial", 9), fg="green")
         self.copy_confirm_label.grid(row=12, column=0, columnspan=2, pady=(0, 10))
 
@@ -101,7 +110,7 @@ class GeneratorScreen(tk.Frame):
         )
 
         # --- HIBP section ---
-        tk.Label(self, text="Check if a password was leaked:", font=("Arial", 11, "bold")).grid(
+        tk.Label(self, text="Check any password for leaks:", font=("Arial", 11, "bold")).grid(
             row=14, column=0, columnspan=2, pady=(10, 5)
         )
 
@@ -151,6 +160,9 @@ class GeneratorScreen(tk.Frame):
         colors = {"Weak": "red", "Medium": "orange", "Strong": "green"}
         self.strength_label.config(text=strength, fg=colors[strength])
 
+        # Clear previous breach result
+        self.breach_result_label.config(text="")
+
     def clear_all(self):
         self.output_var.set("")
         self.output_entry.config(show="*")
@@ -173,6 +185,17 @@ class GeneratorScreen(tk.Frame):
             pyperclip.copy(password)
             self.copy_confirm_label.config(text="✔ Copied to clipboard!", fg="green")
             self.after(2000, lambda: self.copy_confirm_label.config(text=""))
+
+    def check_generated_password(self):
+        # Sends the generated password directly to HIBP check
+        password = self.output_var.get()
+        if not password:
+            self.breach_result_label.config(
+                text="Generate a password first.", fg="gray"
+            )
+            return
+        self.check_input_var.set(password)
+        self.check_breach()
 
     def check_breach(self):
         password = self.check_input_var.get().strip()
