@@ -68,6 +68,8 @@ class VaultScreen:
         edit_btn.grid(row=1, column=0, padx=10, pady=5)
         count_btn = tk.Button(btn_frame, text="Total Entries", width=15, bg="#20c997", fg="white", font=("Arial", 10, "bold"), command=self.count_entries)
         count_btn.grid(row=1, column=1, padx=10, pady=5)
+        export_btn = tk.Button(btn_frame, text="Export Vault", width=15, bg="#e83e8c", fg="white", font=("Arial", 10, "bold"), command=self.export_entries)
+        export_btn.grid(row=1, column=2, padx=10, pady=5)
 
     def search_entries(self, *args):
         query = self.search_var.get().lower()
@@ -204,6 +206,19 @@ class VaultScreen:
     def count_entries(self):
         total = len(self.all_data)
         messagebox.showinfo("Total Entries", f"You have {total} saved password(s) in your vault!")
+    def export_entries(self):
+        if not self.all_data:
+            messagebox.showwarning("Warning", "No entries to export!")
+            return
+        with open("vault_export.txt", "w") as f:
+            f.write("SecureVault Export\n")
+            f.write("==================\n")
+            for entry in self.all_data:
+                f.write(f"Website: {entry[0]}\n")
+                f.write(f"Username: {entry[1]}\n")
+                f.write(f"Password: {entry[2]}\n")
+                f.write("------------------\n")
+        messagebox.showinfo("Success", "Passwords exported to vault_export.txt!")
     def show_empty_message(self):
         if not self.tree.get_children():
             tk.Label(self.root, text="No entries found!", font=("Arial", 12), fg="gray", bg="#f0f0f0").pack(pady=5)
