@@ -154,7 +154,11 @@ class VaultScreen:
     def show_empty_message(self):
         if not self.tree.get_children():
             tk.Label(self.root, text="No entries found!", font=("Arial", 12), fg="gray", bg="#f0f0f0").pack(pady=5)
-
+def refresh_table(self):
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        for entry in self.all_data:
+            self.tree.insert("", "end", values=(entry[0], entry[1], "••••••"))
 
 if __name__ == "__main__":
     root = tk.Tk()
