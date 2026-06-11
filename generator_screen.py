@@ -152,6 +152,11 @@ class GeneratorScreen(tk.Frame):
             self.password_visible = True
 
     def on_generate(self):
+        # --- Validation check ---
+        if not self.use_digits.get() and not self.use_symbols.get() and not self.use_upper.get():
+            self.strength_label.config(text="Select at least one option!", fg="red")
+            return
+
         length = self.length_var.get()
         password = generate_password(
             length=length,
