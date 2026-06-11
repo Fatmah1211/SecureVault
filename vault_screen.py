@@ -10,7 +10,7 @@ class VaultScreen:
         self.root.config(bg="#f0f0f0")
 
         # Title Label
-        title = tk.Label(root, text="🔐 My Password Vault", font=("Arial", 20, "bold"), bg="#f0f0f0", fg="#333333")
+        title = tk.Label(root, text="My Password Vault", font=("Arial", 20, "bold"), bg="#f0f0f0", fg="#333333")
         title.pack(pady=10)
 
         # Search Bar
@@ -28,15 +28,15 @@ class VaultScreen:
         frame = tk.Frame(root)
         frame.pack(pady=10, fill="both", expand=True)
 
-        # Treeview Table
+        # Treeview Table styling
         style = ttk.Style()
         style.configure("Treeview", rowheight=28, font=("Arial", 11))
         style.configure("Treeview.Heading", font=("Arial", 12, "bold"))
 
         self.tree = ttk.Treeview(frame, columns=("Website", "Username", "Password"), show="headings")
-        self.tree.heading("Website", text="🌐 Website")
-        self.tree.heading("Username", text="👤 Username")
-        self.tree.heading("Password", text="🔑 Password")
+        self.tree.heading("Website", text="Website")
+        self.tree.heading("Username", text="Username")
+        self.tree.heading("Password", text="Password")
         self.tree.column("Website", width=220)
         self.tree.column("Username", width=220)
         self.tree.column("Password", width=220)
@@ -55,17 +55,17 @@ class VaultScreen:
         btn_frame = tk.Frame(root, bg="#f0f0f0")
         btn_frame.pack(pady=10)
 
-        add_btn = tk.Button(btn_frame, text="➕ Add Entry", width=15, bg="#28a745", fg="white", font=("Arial", 10, "bold"), command=self.add_entry)
+        add_btn = tk.Button(btn_frame, text="Add Entry", width=15, bg="#28a745", fg="white", font=("Arial", 10, "bold"), command=self.add_entry)
         add_btn.grid(row=0, column=0, padx=10)
 
-        delete_btn = tk.Button(btn_frame, text="🗑 Delete Entry", width=15, bg="#dc3545", fg="white", font=("Arial", 10, "bold"), command=self.delete_entry)
+        delete_btn = tk.Button(btn_frame, text="Delete Entry", width=15, bg="#dc3545", fg="white", font=("Arial", 10, "bold"), command=self.delete_entry)
         delete_btn.grid(row=0, column=1, padx=10)
 
-        copy_btn = tk.Button(btn_frame, text="📋 Copy Password", width=15, bg="#007bff", fg="white", font=("Arial", 10, "bold"), command=self.copy_password)
+        copy_btn = tk.Button(btn_frame, text="Copy Password", width=15, bg="#007bff", fg="white", font=("Arial", 10, "bold"), command=self.copy_password)
         copy_btn.grid(row=0, column=2, padx=10)
 
         self.show_pass = False
-        self.show_btn = tk.Button(btn_frame, text="👁 Show Password", width=15, bg="#fd7e14", fg="white", font=("Arial", 10, "bold"), command=self.toggle_password)
+        self.show_btn = tk.Button(btn_frame, text="Show Password", width=15, bg="#fd7e14", fg="white", font=("Arial", 10, "bold"), command=self.toggle_password)
         self.show_btn.grid(row=0, column=3, padx=10)
 
     def search_entries(self, *args):
@@ -86,13 +86,13 @@ class VaultScreen:
     def toggle_password(self):
         if self.show_pass:
             self.show_pass = False
-            self.show_btn.config(text="👁 Show Password")
+            self.show_btn.config(text="Show Password")
             for item in self.tree.get_children():
                 values = self.tree.item(item)["values"]
                 self.tree.item(item, values=(values[0], values[1], "••••••"))
         else:
             self.show_pass = True
-            self.show_btn.config(text="🙈 Hide Password")
+            self.show_btn.config(text="Hide Password")
             for item in self.tree.get_children():
                 values = self.tree.item(item)["values"]
                 idx = [d[0] for d in self.all_data].index(values[0])
@@ -149,7 +149,7 @@ class VaultScreen:
             else:
                 messagebox.showwarning("Warning", "Please fill all fields!")
 
-        tk.Button(popup, text="💾 Save", bg="#28a745", fg="white", font=("Arial", 11, "bold"), command=save).grid(row=3, column=1, pady=10)
+        tk.Button(popup, text="Save", bg="#28a745", fg="white", font=("Arial", 11, "bold"), command=save).grid(row=3, column=1, pady=10)
 
     def show_empty_message(self):
         if not self.tree.get_children():
