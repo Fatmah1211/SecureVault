@@ -8,6 +8,7 @@ from password_utils import generate_password, check_strength, check_hibp
 class GeneratorScreen(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
+        self.password_visible = False
         self.build_ui()
 
     def build_ui(self):
@@ -64,12 +65,23 @@ class GeneratorScreen(tk.Frame):
             side="left", padx=10
         )
 
-        # --- Output field ---
+        # --- Output field with show/hide toggle ---
         tk.Label(self, text="Generated Password:").grid(row=8, column=0, sticky="w", padx=20)
+
+        output_frame = tk.Frame(self)
+        output_frame.grid(row=9, column=0, columnspan=2, padx=20, pady=5)
+
         self.output_var = tk.StringVar()
-        tk.Entry(self, textvariable=self.output_var, state="readonly", width=35).grid(
-            row=9, column=0, columnspan=2, padx=20, pady=5
+        self.output_entry = tk.Entry(
+            output_frame, textvariable=self.output_var,
+            state="readonly", width=28, show="*"
         )
+        self.output_entry.pack(side="left")
+
+        self.toggle_btn = tk.Button(
+            output_frame, text="Show", width=6, command=self.toggle_password_visibility
+        )
+        self.toggle_btn.pack(side="left", padx=(5, 0))
 
         # --- Strength indicator ---
         tk.Label(self, text="Password Strength:").grid(row=10, column=0, sticky="w", padx=20)
@@ -108,6 +120,16 @@ class GeneratorScreen(tk.Frame):
         self.length_label.config(text=str(length))
         self.char_count_label.config(text=f"Length: {length} characters")
 
+    def toggle_password_visibility(self):
+        if self.password_visible:
+            self.output_entry.config(show="*")
+            self.toggle_btn.config(text="Show")
+            self.password_visible = False
+        else:
+            self.output_entry.config(show="")
+            self.toggle_btn.config(text="Hide")
+            self.password_visible = True
+
     def on_generate(self):
         length = self.length_var.get()
         password = generate_password(
@@ -117,6 +139,10 @@ class GeneratorScreen(tk.Frame):
             use_upper=self.use_upper.get()
         )
         self.output_var.set(password)
+        # Reset to hidden on each new generation
+        self.output_entry.config(show="*")
+        self.toggle_btn.config(text="Show")
+        self.password_visible = False
 
         # Strength check
         strength = check_strength(password)
@@ -125,6 +151,9 @@ class GeneratorScreen(tk.Frame):
 
     def clear_all(self):
         self.output_var.set("")
+        self.output_entry.config(show="*")
+        self.toggle_btn.config(text="Show")
+        self.password_visible = False
         self.strength_label.config(text="—", fg="black")
         self.check_input_var.set("")
         self.breach_result_label.config(text="")
