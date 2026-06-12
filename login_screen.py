@@ -20,6 +20,8 @@ def show_login():
     login_tab_btn.config(bg="#89b4fa", fg="#1e1e2e")
     register_tab_btn.config(bg="#313244", fg="#cdd6f4")
     clear_errors()
+    # Bind Enter key to login function
+    root.bind("<Return>", lambda event: login_clicked())
 
 def show_register():
     register_frame.pack(pady=10)
@@ -27,6 +29,8 @@ def show_register():
     register_tab_btn.config(bg="#89b4fa", fg="#1e1e2e")
     login_tab_btn.config(bg="#313244", fg="#cdd6f4")
     clear_errors()
+    # Bind Enter key to register function
+    root.bind("<Return>", lambda event: register_clicked())
 
 def clear_errors(event=None):
     login_error_label.config(text="")
@@ -59,7 +63,7 @@ def login_clicked():
     if not username or not password:
         login_error_label.config(text="Username and Password are required!")
     else:
-        print("Login validation passed!")
+        print("Login validation passed via key binding!")
 
 tk.Button(login_frame, text="Login", font=("Arial", 12, "bold"), bg="#89b4fa", fg="#1e1e2e", width=20, relief="flat", cursor="hand2", command=login_clicked).pack(pady=10)
 
@@ -93,7 +97,7 @@ def register_clicked():
     elif password != confirm_password:
         reg_error_label.config(text="Passwords do not match!")
     else:
-        print("Registration validation passed!")
+        print("Registration validation passed via key binding!")
 
 tk.Button(register_frame, text="Register", font=("Arial", 12, "bold"), bg="#a6e3a1", fg="#1e1e2e", width=20, relief="flat", cursor="hand2", command=register_clicked).pack(pady=10)
 
