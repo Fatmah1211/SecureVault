@@ -6,38 +6,63 @@ class VaultScreen:
     def __init__(self, root):
         self.root = root
         self.root.title("SecureVault - Password Vault")
-        self.root.geometry("800x500")
-        self.root.config(bg="#f0f0f0")
+        self.root.geometry("900x600")
+        self.root.config(bg="#1e1e2e")
 
-        title = tk.Label(root, text="My Password Vault", font=("Arial", 20, "bold"), bg="#f0f0f0", fg="#333333")
-        title.pack(pady=10)
+        # Header
+        header = tk.Frame(root, bg="#313244", pady=15)
+        header.pack(fill="x")
+        tk.Label(header, text="🔐 SecureVault", font=("Arial", 24, "bold"), bg="#313244", fg="#cba6f7").pack()
+        tk.Label(header, text="Your passwords, safe and secure", font=("Arial", 11), bg="#313244", fg="#a6adc8").pack()
 
-        search_frame = tk.Frame(root, bg="#f0f0f0")
-        search_frame.pack(pady=5)
-        tk.Label(search_frame, text="Search:", bg="#f0f0f0", font=("Arial", 11)).pack(side="left", padx=5)
+        # Search Bar
+        search_frame = tk.Frame(root, bg="#1e1e2e")
+        search_frame.pack(pady=15)
+        tk.Label(search_frame, text="🔍", bg="#1e1e2e", fg="#cba6f7", font=("Arial", 13)).pack(side="left", padx=5)
         self.search_var = tk.StringVar()
         self.search_var.trace("w", self.search_entries)
-        search_entry = tk.Entry(search_frame, textvariable=self.search_var, width=30, font=("Arial", 11))
+        search_entry = tk.Entry(search_frame, textvariable=self.search_var, width=35,
+                                font=("Arial", 11), bg="#313244", fg="#cdd6f4",
+                                insertbackground="white", relief="flat", bd=8)
         search_entry.pack(side="left", padx=5)
-        clear_btn = tk.Button(search_frame, text="Clear", bg="gray", fg="white", command=self.clear_search)
-        clear_btn.pack(side="left", padx=5)
+        tk.Button(search_frame, text="Clear", bg="#45475a", fg="white",
+                  font=("Arial", 10), relief="flat", padx=10,
+                  command=self.clear_search).pack(side="left", padx=5)
 
-        frame = tk.Frame(root)
-        frame.pack(pady=10, fill="both", expand=True)
+        # Table Frame
+        table_frame = tk.Frame(root, bg="#1e1e2e")
+        table_frame.pack(pady=5, fill="both", expand=True, padx=20)
 
+        # Treeview Style
         style = ttk.Style()
-        style.configure("Treeview", rowheight=28, font=("Arial", 11))
-        style.configure("Treeview.Heading", font=("Arial", 12, "bold"))
+        style.theme_use("clam")
+        style.configure("Treeview",
+                        background="#313244",
+                        foreground="#cdd6f4",
+                        rowheight=32,
+                        fieldbackground="#313244",
+                        font=("Arial", 11))
+        style.configure("Treeview.Heading",
+                        background="#45475a",
+                        foreground="#cba6f7",
+                        font=("Arial", 12, "bold"),
+                        relief="flat")
+        style.map("Treeview", background=[("selected", "#585b70")])
 
-        self.tree = ttk.Treeview(frame, columns=("Website", "Username", "Password"), show="headings")
-        self.tree.heading("Website", text="Website")
-        self.tree.heading("Username", text="Username")
-        self.tree.heading("Password", text="Password")
-        self.tree.column("Website", width=220)
-        self.tree.column("Username", width=220)
-        self.tree.column("Password", width=220)
-        self.tree.pack(fill="both", expand=True)
+        self.tree = ttk.Treeview(table_frame, columns=("Website", "Username", "Password"), show="headings")
+        self.tree.heading("Website", text="🌐  Website")
+        self.tree.heading("Username", text="👤  Username")
+        self.tree.heading("Password", text="🔑  Password")
+        self.tree.column("Website", width=250)
+        self.tree.column("Username", width=250)
+        self.tree.column("Password", width=250)
 
+        scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=scrollbar.set)
+        self.tree.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # Sample Data
         self.all_data = [
             ("facebook.com", "ayesha123", "pass123"),
             ("gmail.com", "ayesha@gmail.com", "gmail456"),
@@ -46,32 +71,45 @@ class VaultScreen:
         for item in self.all_data:
             self.tree.insert("", "end", values=(item[0], item[1], "••••••"))
 
-        btn_frame = tk.Frame(root, bg="#f0f0f0")
-        btn_frame.pack(pady=10)
+        # Buttons Row 1
+        btn_frame1 = tk.Frame(root, bg="#1e1e2e")
+        btn_frame1.pack(pady=8)
 
-        add_btn = tk.Button(btn_frame, text="Add Entry", width=15, bg="#28a745", fg="white", font=("Arial", 10, "bold"), command=self.add_entry)
-        add_btn.grid(row=0, column=0, padx=10)
+        buttons1 = [
+            ("➕ Add Entry", "#a6e3a1", "#1e1e2e", self.add_entry),
+            ("🗑 Delete", "#f38ba8", "#1e1e2e", self.delete_entry),
+            ("📋 Copy", "#89b4fa", "#1e1e2e", self.copy_password),
+            ("✏️ Edit", "#89dceb", "#1e1e2e", self.edit_entry),
+            ("👁 Show/Hide", "#fab387", "#1e1e2e", self.toggle_password),
+        ]
+        for text, bg, fg, cmd in buttons1:
+            tk.Button(btn_frame1, text=text, bg=bg, fg=fg,
+                      font=("Arial", 10, "bold"), relief="flat",
+                      padx=12, pady=6, command=cmd).pack(side="left", padx=6)
 
-        delete_btn = tk.Button(btn_frame, text="Delete Entry", width=15, bg="#dc3545", fg="white", font=("Arial", 10, "bold"), command=self.delete_entry)
-        delete_btn.grid(row=0, column=1, padx=10)
+        # Buttons Row 2
+        btn_frame2 = tk.Frame(root, bg="#1e1e2e")
+        btn_frame2.pack(pady=5)
 
-        copy_btn = tk.Button(btn_frame, text="Copy Password", width=15, bg="#007bff", fg="white", font=("Arial", 10, "bold"), command=self.copy_password)
-        copy_btn.grid(row=0, column=2, padx=10)
+        buttons2 = [
+            ("🔤 Sort A-Z", "#cba6f7", "#1e1e2e", self.sort_by_website),
+            ("🔢 Total Entries", "#a6e3a1", "#1e1e2e", self.count_entries),
+            ("💾 Export", "#f9e2af", "#1e1e2e", self.export_entries),
+            ("🗑 Clear All", "#f38ba8", "#1e1e2e", self.clear_all_entries),
+        ]
+        for text, bg, fg, cmd in buttons2:
+            tk.Button(btn_frame2, text=text, bg=bg, fg=fg,
+                      font=("Arial", 10, "bold"), relief="flat",
+                      padx=12, pady=6, command=cmd).pack(side="left", padx=6)
 
-        self.show_pass = False
-        self.show_btn = tk.Button(btn_frame, text="Show Password", width=15, bg="#fd7e14", fg="white", font=("Arial", 10, "bold"), command=self.toggle_password)
-        self.show_btn.grid(row=0, column=3, padx=10)
+        about_btn = tk.Button(btn_frame2, text="ℹ️ About", bg="#74c7ec", fg="#1e1e2e",
+                  font=("Arial", 10, "bold"), relief="flat",
+                  padx=12, pady=6, command=self.show_about)
+        about_btn.pack(side="left", padx=6)
 
-        sort_btn = tk.Button(btn_frame, text="Sort A-Z", width=15, bg="#6f42c1", fg="white", font=("Arial", 10, "bold"), command=self.sort_by_website)
-        sort_btn.grid(row=0, column=4, padx=10)
-        edit_btn = tk.Button(btn_frame, text="Edit Entry", width=15, bg="#17a2b8", fg="white", font=("Arial", 10, "bold"), command=self.edit_entry)
-        edit_btn.grid(row=1, column=0, padx=10, pady=5)
-        count_btn = tk.Button(btn_frame, text="Total Entries", width=15, bg="#20c997", fg="white", font=("Arial", 10, "bold"), command=self.count_entries)
-        count_btn.grid(row=1, column=1, padx=10, pady=5)
-        export_btn = tk.Button(btn_frame, text="Export Vault", width=15, bg="#e83e8c", fg="white", font=("Arial", 10, "bold"), command=self.export_entries)
-        export_btn.grid(row=1, column=2, padx=10, pady=5)
-        clear_all_btn = tk.Button(btn_frame, text="Clear All", width=15, bg="#343a40", fg="white", font=("Arial", 10, "bold"), command=self.clear_all_entries)
-        clear_all_btn.grid(row=1, column=3, padx=10, pady=5)
+        # Footer
+        tk.Label(root, text="🔒 All passwords are encrypted and stored locally",
+                 bg="#1e1e2e", fg="#585b70", font=("Arial", 9)).pack(pady=8)
 
     def search_entries(self, *args):
         query = self.search_var.get().lower()
@@ -85,16 +123,22 @@ class VaultScreen:
         self.search_var.set("")
         self.refresh_table()
 
+    def refresh_table(self):
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        for entry in self.all_data:
+            self.tree.insert("", "end", values=(entry[0], entry[1], "••••••"))
+
     def toggle_password(self):
+        if not hasattr(self, 'show_pass'):
+            self.show_pass = False
         if self.show_pass:
             self.show_pass = False
-            self.show_btn.config(text="Show Password")
             for item in self.tree.get_children():
                 values = self.tree.item(item)["values"]
                 self.tree.item(item, values=(values[0], values[1], "••••••"))
         else:
             self.show_pass = True
-            self.show_btn.config(text="Hide Password")
             for item in self.tree.get_children():
                 values = self.tree.item(item)["values"]
                 idx = [d[0] for d in self.all_data].index(values[0])
@@ -125,20 +169,27 @@ class VaultScreen:
     def add_entry(self):
         popup = tk.Toplevel(self.root)
         popup.title("Add New Entry")
-        popup.geometry("320x220")
-        popup.config(bg="#f0f0f0")
+        popup.geometry("350x250")
+        popup.config(bg="#1e1e2e")
 
-        tk.Label(popup, text="Website:", bg="#f0f0f0", font=("Arial", 11)).grid(row=0, column=0, padx=10, pady=8)
-        website_entry = tk.Entry(popup, width=25, font=("Arial", 11))
-        website_entry.grid(row=0, column=1, padx=10, pady=8)
+        tk.Label(popup, text="Add New Password", font=("Arial", 14, "bold"),
+                 bg="#1e1e2e", fg="#cba6f7").grid(row=0, columnspan=2, pady=10)
 
-        tk.Label(popup, text="Username:", bg="#f0f0f0", font=("Arial", 11)).grid(row=1, column=0, padx=10, pady=8)
-        username_entry = tk.Entry(popup, width=25, font=("Arial", 11))
-        username_entry.grid(row=1, column=1, padx=10, pady=8)
+        for i, label in enumerate(["🌐 Website:", "👤 Username:", "🔑 Password:"]):
+            tk.Label(popup, text=label, bg="#1e1e2e", fg="#cdd6f4",
+                     font=("Arial", 11)).grid(row=i+1, column=0, padx=15, pady=8)
 
-        tk.Label(popup, text="Password:", bg="#f0f0f0", font=("Arial", 11)).grid(row=2, column=0, padx=10, pady=8)
-        password_entry = tk.Entry(popup, width=25, show="*", font=("Arial", 11))
-        password_entry.grid(row=2, column=1, padx=10, pady=8)
+        website_entry = tk.Entry(popup, width=22, font=("Arial", 11),
+                                 bg="#313244", fg="#cdd6f4", insertbackground="white", relief="flat", bd=6)
+        website_entry.grid(row=1, column=1, padx=10, pady=8)
+
+        username_entry = tk.Entry(popup, width=22, font=("Arial", 11),
+                                  bg="#313244", fg="#cdd6f4", insertbackground="white", relief="flat", bd=6)
+        username_entry.grid(row=2, column=1, padx=10, pady=8)
+
+        password_entry = tk.Entry(popup, width=22, show="*", font=("Arial", 11),
+                                  bg="#313244", fg="#cdd6f4", insertbackground="white", relief="flat", bd=6)
+        password_entry.grid(row=3, column=1, padx=10, pady=8)
 
         def save():
             website = website_entry.get()
@@ -151,17 +202,10 @@ class VaultScreen:
             else:
                 messagebox.showwarning("Warning", "Please fill all fields!")
 
-        tk.Button(popup, text="Save", bg="#28a745", fg="white", font=("Arial", 11, "bold"), command=save).grid(row=3, column=1, pady=10)
+        tk.Button(popup, text="💾 Save", bg="#a6e3a1", fg="#1e1e2e",
+                  font=("Arial", 11, "bold"), relief="flat", padx=15, pady=5,
+                  command=save).grid(row=4, column=1, pady=12)
 
-    def refresh_table(self):
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-        for entry in self.all_data:
-            self.tree.insert("", "end", values=(entry[0], entry[1], "••••••"))
-
-    def sort_by_website(self):
-        self.all_data.sort(key=lambda x: x[0].lower())
-        self.refresh_table()
     def edit_entry(self):
         selected = self.tree.selection()
         if not selected:
@@ -175,23 +219,30 @@ class VaultScreen:
 
         popup = tk.Toplevel(self.root)
         popup.title("Edit Entry")
-        popup.geometry("320x220")
-        popup.config(bg="#f0f0f0")
+        popup.geometry("350x250")
+        popup.config(bg="#1e1e2e")
 
-        tk.Label(popup, text="Website:", bg="#f0f0f0", font=("Arial", 11)).grid(row=0, column=0, padx=10, pady=8)
-        website_entry = tk.Entry(popup, width=25, font=("Arial", 11))
+        tk.Label(popup, text="Edit Password", font=("Arial", 14, "bold"),
+                 bg="#1e1e2e", fg="#89dceb").grid(row=0, columnspan=2, pady=10)
+
+        for i, label in enumerate(["🌐 Website:", "👤 Username:", "🔑 Password:"]):
+            tk.Label(popup, text=label, bg="#1e1e2e", fg="#cdd6f4",
+                     font=("Arial", 11)).grid(row=i+1, column=0, padx=15, pady=8)
+
+        website_entry = tk.Entry(popup, width=22, font=("Arial", 11),
+                                 bg="#313244", fg="#cdd6f4", insertbackground="white", relief="flat", bd=6)
         website_entry.insert(0, old_website)
-        website_entry.grid(row=0, column=1, padx=10, pady=8)
+        website_entry.grid(row=1, column=1, padx=10, pady=8)
 
-        tk.Label(popup, text="Username:", bg="#f0f0f0", font=("Arial", 11)).grid(row=1, column=0, padx=10, pady=8)
-        username_entry = tk.Entry(popup, width=25, font=("Arial", 11))
+        username_entry = tk.Entry(popup, width=22, font=("Arial", 11),
+                                  bg="#313244", fg="#cdd6f4", insertbackground="white", relief="flat", bd=6)
         username_entry.insert(0, old_username)
-        username_entry.grid(row=1, column=1, padx=10, pady=8)
+        username_entry.grid(row=2, column=1, padx=10, pady=8)
 
-        tk.Label(popup, text="Password:", bg="#f0f0f0", font=("Arial", 11)).grid(row=2, column=0, padx=10, pady=8)
-        password_entry = tk.Entry(popup, width=25, show="*", font=("Arial", 11))
+        password_entry = tk.Entry(popup, width=22, show="*", font=("Arial", 11),
+                                  bg="#313244", fg="#cdd6f4", insertbackground="white", relief="flat", bd=6)
         password_entry.insert(0, old_password)
-        password_entry.grid(row=2, column=1, padx=10, pady=8)
+        password_entry.grid(row=3, column=1, padx=10, pady=8)
 
         def update():
             new_website = website_entry.get()
@@ -204,10 +255,18 @@ class VaultScreen:
             else:
                 messagebox.showwarning("Warning", "Please fill all fields!")
 
-        tk.Button(popup, text="Update", bg="#007bff", fg="white", font=("Arial", 11, "bold"), command=update).grid(row=3, column=1, pady=10)
+        tk.Button(popup, text="✅ Update", bg="#89dceb", fg="#1e1e2e",
+                  font=("Arial", 11, "bold"), relief="flat", padx=15, pady=5,
+                  command=update).grid(row=4, column=1, pady=12)
+
+    def sort_by_website(self):
+        self.all_data.sort(key=lambda x: x[0].lower())
+        self.refresh_table()
+
     def count_entries(self):
         total = len(self.all_data)
         messagebox.showinfo("Total Entries", f"You have {total} saved password(s) in your vault!")
+
     def export_entries(self):
         if not self.all_data:
             messagebox.showwarning("Warning", "No entries to export!")
@@ -221,6 +280,7 @@ class VaultScreen:
                 f.write(f"Password: {entry[2]}\n")
                 f.write("------------------\n")
         messagebox.showinfo("Success", "Passwords exported to vault_export.txt!")
+
     def clear_all_entries(self):
         if not self.all_data:
             messagebox.showwarning("Warning", "Vault is already empty!")
@@ -230,9 +290,15 @@ class VaultScreen:
             self.all_data.clear()
             self.refresh_table()
             messagebox.showinfo("Done", "All entries cleared!")
+
+    def show_about(self):
+        messagebox.showinfo("About SecureVault",
+            "SecureVault v1.0\n\nA secure password manager.\nAll passwords stored locally.\n\nDeveloped by Team SecureVault.")
+
     def show_empty_message(self):
         if not self.tree.get_children():
-            tk.Label(self.root, text="No entries found!", font=("Arial", 12), fg="gray", bg="#f0f0f0").pack(pady=5)
+            tk.Label(self.root, text="No entries found!", font=("Arial", 12),
+                     fg="#585b70", bg="#1e1e2e").pack(pady=5)
 
 
 if __name__ == "__main__":
