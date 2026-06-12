@@ -234,10 +234,10 @@ class VaultScreen:
         if not self.tree.get_children():
             tk.Label(self.root, text="No entries found!", font=("Arial", 12), fg="gray", bg="#f0f0f0").pack(pady=5)
 
-def filter_by_category(self, category):
+    def filter_by_category(self, category):
         for row in self.tree.get_children():
             self.tree.delete(row)
-        for entry in self.all_entries:
+        for entry in self.all_data:
             if category == "All" or (len(entry) > 3 and entry[3] == category):
                 self.tree.insert("", "end", values=entry)
 
