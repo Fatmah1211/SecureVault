@@ -71,14 +71,17 @@ reg_error_label.pack(pady=5)
 
 
 def register_clicked():
+    username = reg_username_entry.get().strip()
     password = reg_password_entry.get()
     confirm_password = reg_confirm_entry.get()
     
-    if password != confirm_password:
+    if not username or not password or not confirm_password:
+        reg_error_label.config(text="All fields are required!")
+    elif password != confirm_password:
         reg_error_label.config(text="Passwords do not match!")
     else:
-        reg_error_label.config(text="") # Clear error if they match
-        print("Register validation passed!")
+        reg_error_label.config(text="")
+        print("Registration validation passed!")
 
 tk.Button(register_frame, text="Register", font=("Arial", 12, "bold"), bg="#a6e3a1", fg="#1e1e2e", width=20, relief="flat", cursor="hand2", command=register_clicked).pack(pady=10)
 
