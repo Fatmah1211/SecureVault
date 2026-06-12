@@ -2,7 +2,7 @@ import tkinter as tk
 
 root = tk.Tk()
 root.title("SecureVault - Password Manager")
-root.geometry("400x550")
+root.geometry("400x570")
 root.resizable(False, False)
 root.configure(bg="#1e1e2e")
 
@@ -42,10 +42,14 @@ tk.Label(login_frame, text="Password", font=("Arial", 12), bg="#1e1e2e", fg="#cd
 password_entry = tk.Entry(login_frame, font=("Arial", 12), width=25, show="*", bg="#313244", fg="#cdd6f4", insertbackground="white")
 password_entry.pack(pady=8, ipady=5)
 
+# Login Error Label
+login_error_label = tk.Label(login_frame, text="", font=("Arial", 10), bg="#1e1e2e", fg="#f38ba8")
+login_error_label.pack(pady=5)
+
 def login_clicked():
     print("Login button clicked")
 
-tk.Button(login_frame, text="Login", font=("Arial", 12, "bold"), bg="#89b4fa", fg="#1e1e2e", width=20, relief="flat", cursor="hand2", command=login_clicked).pack(pady=20)
+tk.Button(login_frame, text="Login", font=("Arial", 12, "bold"), bg="#89b4fa", fg="#1e1e2e", width=20, relief="flat", cursor="hand2", command=login_clicked).pack(pady=10)
 
 # --- Register Frame ---
 register_frame = tk.Frame(root, bg="#1e1e2e")
@@ -61,11 +65,14 @@ tk.Label(register_frame, text="Confirm Password", font=("Arial", 12), bg="#1e1e2
 reg_confirm_entry = tk.Entry(register_frame, font=("Arial", 12), width=25, show="*", bg="#313244", fg="#cdd6f4", insertbackground="white")
 reg_confirm_entry.pack(pady=8, ipady=5)
 
+# Register Error Label
+reg_error_label = tk.Label(register_frame, text="", font=("Arial", 10), bg="#1e1e2e", fg="#f38ba8")
+reg_error_label.pack(pady=5)
+
 def register_clicked():
     print("Register button clicked")
 
-tk.Button(register_frame, text="Register", font=("Arial", 12, "bold"), bg="#a6e3a1", fg="#1e1e2e", width=20, relief="flat", cursor="hand2", command=register_clicked).pack(pady=20)
+tk.Button(register_frame, text="Register", font=("Arial", 12, "bold"), bg="#a6e3a1", fg="#1e1e2e", width=20, relief="flat", cursor="hand2", command=register_clicked).pack(pady=10)
 
-# Show login by default
 show_login()
 root.mainloop()
