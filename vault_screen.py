@@ -254,3 +254,32 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = VaultScreen(root)
     root.mainloop()
+def open_vault(username):
+    from securevault.database import get_passwords, save_password, delete_password, update_password, initialize_database
+    from securevault.encryption import generate_key, encrypt_password, decrypt_password
+    from securevault.database import login_user
+    from password_utils import login_user as pu_login
+
+    root = tk.Tk()
+    app = VaultScreen(root)
+    app.username = username
+
+    # Get user_id
+    from securevault.database import get_connection
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT id FROM users WHERE username = ?', (username,))
+    user = cursor.fetchone()
+    conn.close()
+    app.user_id = user[0] if user else None
+
+    # Load real data from database
+    app.all_data = []
+    if app.user_id:
+        passwords = get_passwords(app.user_id)
+        for p in passwords:
+            decrypted = decrypt_password(p[3])
+            app.all_data.append((p[1], p[2], decrypted, p[4]))
+        app.refresh_table()
+
+    root.mainloop()
