@@ -69,8 +69,16 @@ reg_confirm_entry.pack(pady=8, ipady=5)
 reg_error_label = tk.Label(register_frame, text="", font=("Arial", 10), bg="#1e1e2e", fg="#f38ba8")
 reg_error_label.pack(pady=5)
 
+
 def register_clicked():
-    print("Register button clicked")
+    password = reg_password_entry.get()
+    confirm_password = reg_confirm_entry.get()
+    
+    if password != confirm_password:
+        reg_error_label.config(text="Passwords do not match!")
+    else:
+        reg_error_label.config(text="") # Clear error if they match
+        print("Register validation passed!")
 
 tk.Button(register_frame, text="Register", font=("Arial", 12, "bold"), bg="#a6e3a1", fg="#1e1e2e", width=20, relief="flat", cursor="hand2", command=register_clicked).pack(pady=10)
 
