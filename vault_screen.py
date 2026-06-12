@@ -95,6 +95,10 @@ class VaultScreen:
                       font=("Arial", 10, "bold"), relief="flat",
                       padx=12, pady=6, command=cmd).pack(side="left", padx=6)
 
+        gen_btn = tk.Button(btn_frame2, text="🔑 Generator", bg="#cba6f7", fg="#1e1e2e",
+                  font=("Arial", 10, "bold"), relief="flat",
+                  padx=12, pady=6, command=self.open_generator)
+        gen_btn.pack(side="left", padx=6)
         about_btn = tk.Button(btn_frame2, text="ℹ️ About", bg="#74c7ec", fg="#1e1e2e",
                   font=("Arial", 10, "bold"), relief="flat",
                   padx=12, pady=6, command=self.show_about)
@@ -288,6 +292,16 @@ class VaultScreen:
             self.all_data.clear()
             self.refresh_table()
             messagebox.showinfo("Done", "All entries cleared!")
+
+    def open_generator(self):
+        import importlib
+        import generator_screen
+        win = tk.Toplevel(self.root)
+        win.title("Password Generator")
+        win.geometry("420x550")
+        win.config(bg="#1e1e2e")
+        app = generator_screen.GeneratorScreen(win)
+        app.pack(fill="both", expand=True)
 
     def show_about(self):
         messagebox.showinfo("About SecureVault",
