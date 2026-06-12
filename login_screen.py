@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-import password_utils as vu  # Imports Fatimah's backend logic
+import password_utils as vu  # Imports Fatimah's backend database logic
 
 root = tk.Tk()
 root.title("SecureVault - Password Manager")
@@ -62,8 +62,14 @@ def login_clicked():
     password = password_entry.get()
     if not username or not password:
         login_error_label.config(text="Username and Password are required!")
+        return
+        
+    # Verifying password with database records
+    success, message = vu.login_user(username, password)
+    if success:
+        print("Login approved by backend!")
     else:
-        print("Login validation passed")
+        login_error_label.config(text="Invalid username or password.")
 
 tk.Button(login_frame, text="Login", font=("Arial", 12, "bold"), bg="#89b4fa", fg="#1e1e2e", width=20, relief="flat", cursor="hand2", command=login_clicked).pack(pady=10)
 
@@ -99,7 +105,6 @@ def register_clicked():
         reg_error_label.config(text="Passwords do not match!")
         return
         
-    # Calling Fatimah's backend registration function
     success, message = vu.register_user(username, password)
     if success:
         messagebox.showinfo("Success", "Account created successfully! Please log in.")
