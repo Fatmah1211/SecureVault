@@ -47,7 +47,14 @@ login_error_label = tk.Label(login_frame, text="", font=("Arial", 10), bg="#1e1e
 login_error_label.pack(pady=5)
 
 def login_clicked():
-    print("Login button clicked")
+    username = username_entry.get().strip()
+    password = password_entry.get()
+    
+    if not username or not password:
+        login_error_label.config(text="Username and Password are required!")
+    else:
+        login_error_label.config(text="")
+        print("Login form validation passed!")
 
 tk.Button(login_frame, text="Login", font=("Arial", 12, "bold"), bg="#89b4fa", fg="#1e1e2e", width=20, relief="flat", cursor="hand2", command=login_clicked).pack(pady=10)
 
