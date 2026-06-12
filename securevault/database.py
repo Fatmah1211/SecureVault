@@ -127,7 +127,7 @@ def get_passwords_by_category(user_id, category):
     rows = cursor.fetchall()
     conn.close()
     return rows
-    def get_all_categories(user_id):
+def get_all_categories(user_id):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
