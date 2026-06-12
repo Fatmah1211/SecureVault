@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
-import password_utils as vu  # Imports Fatimah's backend database logic
+import password_utils as vu
+import vault_screen  # Import team member's vault layout script
 
 root = tk.Tk()
 root.title("SecureVault - Password Manager")
@@ -64,10 +65,11 @@ def login_clicked():
         login_error_label.config(text="Username and Password are required!")
         return
         
-    # Verifying password with database records
     success, message = vu.login_user(username, password)
     if success:
-        print("Login approved by backend!")
+        # Closes the login frame window and switches to the main workspace screen
+        root.destroy()
+        vault_screen.open_vault(username)
     else:
         login_error_label.config(text="Invalid username or password.")
 
