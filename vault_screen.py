@@ -63,14 +63,7 @@ class VaultScreen:
         scrollbar.pack(side="right", fill="y")
 
         # Sample Data
-        self.all_data = [
-            ("facebook.com", "ayesha123", "pass123"),
-            ("gmail.com", "ayesha@gmail.com", "gmail456"),
-            ("github.com", "ayesha_dev", "github789"),
-        ]
-        for item in self.all_data:
-            self.tree.insert("", "end", values=(item[0], item[1], "••••••"))
-
+        self.all_data = []
         # Buttons Row 1
         btn_frame1 = tk.Frame(root, bg="#1e1e2e")
         btn_frame1.pack(pady=8)
@@ -196,8 +189,13 @@ class VaultScreen:
             username = username_entry.get()
             password = password_entry.get()
             if website and username and password:
-                self.all_data.append((website, username, password))
-                self.tree.insert("", "end", values=(website, username, "••••••"))
+                from securevault.database import save_password
+                from securevault.encryption import encrypt_password
+                if hasattr(self, 'user_id') and self.user_id:
+                    encrypted = encrypt_password(password)
+                    save_password(self.user_id, website, username, encrypted, 'General')
+                self.all_data.append((website, username, password, 'General'))
+                self.refresh_table()
                 popup.destroy()
             else:
                 messagebox.showwarning("Warning", "Please fill all fields!")
@@ -321,17 +319,13 @@ if __name__ == "__main__":
     app = VaultScreen(root)
     root.mainloop()
 def open_vault(username):
-    from securevault.database import get_passwords, save_password, delete_password, update_password, initialize_database
-    from securevault.encryption import generate_key, encrypt_password, decrypt_password
-    from securevault.database import login_user
-    from password_utils import login_user as pu_login
+    from securevault.database import get_passwords, save_password, get_connection
+    from securevault.encryption import encrypt_password, decrypt_password
 
     root = tk.Tk()
     app = VaultScreen(root)
     app.username = username
 
-    # Get user_id
-    from securevault.database import get_connection
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT id FROM users WHERE username = ?', (username,))
@@ -339,7 +333,6 @@ def open_vault(username):
     conn.close()
     app.user_id = user[0] if user else None
 
-    # Load real data from database
     app.all_data = []
     if app.user_id:
         passwords = get_passwords(app.user_id)
@@ -348,4 +341,33 @@ def open_vault(username):
             app.all_data.append((p[1], p[2], decrypted, p[4]))
         app.refresh_table()
 
+    def new_add_entry():
+        popup = tk.Toplevel(root)
+        popup.title("Add New Entry")
+        popup.geometry("350x250")
+        popup.config(bg="#1e1e2e")
+        tk.Label(popup, text="Add New Password", font=("Arial", 14, "bold"), bg="#1e1e2e", fg="#cba6f7").grid(row=0, columnspan=2, pady=10)
+        for i, label in enumerate(["Website:", "Username:", "Password:"]):
+            tk.Label(popup, text=label, bg="#1e1e2e", fg="#cdd6f4", font=("Arial", 11)).grid(row=i+1, column=0, padx=15, pady=8)
+        website_entry = tk.Entry(popup, width=22, font=("Arial", 11), bg="#313244", fg="#cdd6f4", insertbackground="white", relief="flat", bd=6)
+        website_entry.grid(row=1, column=1, padx=10, pady=8)
+        username_entry = tk.Entry(popup, width=22, font=("Arial", 11), bg="#313244", fg="#cdd6f4", insertbackground="white", relief="flat", bd=6)
+        username_entry.grid(row=2, column=1, padx=10, pady=8)
+        password_entry = tk.Entry(popup, width=22, show="*", font=("Arial", 11), bg="#313244", fg="#cdd6f4", insertbackground="white", relief="flat", bd=6)
+        password_entry.grid(row=3, column=1, padx=10, pady=8)
+        def save():
+            website = website_entry.get()
+            uname = username_entry.get()
+            password = password_entry.get()
+            if website and uname and password:
+                encrypted = encrypt_password(password)
+                save_password(app.user_id, website, uname, encrypted, 'General')
+                app.all_data.append((website, uname, password, 'General'))
+                app.refresh_table()
+                popup.destroy()
+            else:
+                messagebox.showwarning("Warning", "Please fill all fields!")
+        tk.Button(popup, text="Save", bg="#a6e3a1", fg="#1e1e2e", font=("Arial", 11, "bold"), relief="flat", padx=15, pady=5, command=save).grid(row=4, column=1, pady=12)
+
+    app.add_entry = new_add_entry
     root.mainloop()
