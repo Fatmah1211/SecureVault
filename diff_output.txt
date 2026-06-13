@@ -1,0 +1,515 @@
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..900134e
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,4 @@
++__pycache__/
++*.pyc
++secret.key
++securevault.db
+diff --git a/README.md b/README.md
+index 5ff0c3b..0406acb 100644
+--- a/README.md
++++ b/README.md
+@@ -1 +1,85 @@
+-# SecureVault
+\ No newline at end of file
++# SecureVault - Password Manager
++
++A desktop password manager built with Python and Tkinter. Users can register, log in, save encrypted passwords, generate strong passwords, and check if a password has been leaked in a data breach.
++
++## Tech Stack
++
++- Frontend: Tkinter
++- Backend: Python
++- Database: SQLite
++- Encryption: cryptography (Fernet)
++- Breach Checking: HaveIBeenPwned API
++
++## Project Structure
++SecureVault/
++├── main.py
++├── README.md
++├── securevault/
++│   ├── database.py       # All database functions
++│   ├── encryption.py     # Encrypt, decrypt, hash passwords
++│   └── hibp.py           # Breach checking via HIBP API
++## Setup Instructions
++
++```bash
++git clone https://github.com/Fatmah1211/SecureVault
++cd SecureVault
++pip install cryptography requests
++python3 main.py
++```
++
++## Backend Functions (for group members)
++
++### encryption.py
++- `generate_key()` — run once at app startup
++- `encrypt_password(plain)` — returns encrypted string
++- `decrypt_password(encrypted)` — returns original password
++- `hash_password(password)` — returns SHA256 hash
++- `verify_password(password, hashed)` — returns True/False
++
++### database.py
++- `initialize_database()` — run once at app startup
++- `register_user(username, password_hash)` — returns True/False
++- `login_user(username, password_hash)` — returns user_id or None
++- `save_password(user_id, website, username, encrypted_password, category)` — saves entry
++- `get_passwords(user_id)` — returns list of all saved entries
++- `delete_password(password_id)` — deletes an entry
++
++### hibp.py
++- `check_password_breached(password)` — returns breach count, 0 if clean, None if API error
++
++## How to Use Backend in Your Screen
++
++```python
++from securevault.database import initialize_database, register_user, login_user
++from securevault.encryption import generate_key, hash_password, encrypt_password, decrypt_password
++from securevault.hibp import check_password_breached
++
++# Run at startup
++generate_key()
++initialize_database()
++
++# Register
++register_user("username", hash_password("password"))
++
++# Login
++user_id = login_user("username", hash_password("password"))
++
++# Save a password
++encrypt_password("mypassword")
++
++# Check breach
++count = check_password_breached("password123")
++```
++
++## Team
++
++| Member | Branch | Responsibility |
++|--------|--------|---------------|
++| Fatmah Tahir | backend + integration | Database, encryption, HIBP, merging |
++| Fizzah Ahsan | login-screen | Login and register screen |
++| Ayesha Noor  | vault-screen | Password vault screen |
++| Maida Saleem | generator-screen | Password generator screen |
++| Drakhshan Abbas | vault-screen-extras | Search, filter, categories |
++
++## Screenshots
++Coming soon.
+diff --git a/main.py b/main.py
+new file mode 100644
+index 0000000..b9a3d85
+--- /dev/null
++++ b/main.py
+@@ -0,0 +1,55 @@
++from securevault.database import initialize_database, register_user, login_user, save_password, get_passwords, delete_password, update_password, search_passwords, get_password_by_id, get_passwords_by_category
++from securevault.encryption import generate_key, encrypt_password, decrypt_password, hash_password
++from securevault.hibp import check_password_breached
++
++def test():
++    # Setup
++    generate_key()
++    initialize_database()
++
++    # Test registration
++    hashed = hash_password("testpass123")
++    result = register_user("fatimah", hashed)
++    print(f"Registration: {'Success' if result else 'User already exists'}")
++
++    # Test login
++    user_id = login_user("fatimah", hashed)
++    print(f"Login: {'Success, user_id=' + str(user_id) if user_id else 'Failed'}")
++
++    # Test saving a password
++    encrypted = encrypt_password("myFacebookPass123")
++    save_password(user_id, "facebook.com", "fatimah@email.com", encrypted, "Social")
++    print("Password saved successfully")
++
++    # Test retrieving passwords
++    passwords = get_passwords(user_id)
++    for p in passwords:
++        decrypted = decrypt_password(p[3])
++        print(f"Website: {p[1]} | Username: {p[2]} | Password: {decrypted} | Category: {p[4]}")
++
++    # Test HIBP
++    count = check_password_breached("password123")
++    if count is None:
++        print("HIBP API error")
++    elif count == 0:
++        print("Password is clean")
++    else:
++        print(f"Password breached {count} times!")
++    # Test search
++    results = search_passwords(user_id, "face")
++    print(f"Search results: {len(results)} found")
++
++    # Test get by id
++    entry = get_password_by_id(1)
++    print(f"Entry by id: {entry}")
++
++    # Test update
++    update_password(1, "facebook.com", "newuser@email.com", encrypt_password("newpass456"), "Social")
++    print("Password updated successfully")
++
++    # Test category filter
++    social = get_passwords_by_category(user_id, "Social")
++    print(f"Social passwords: {len(social)} found")
++
++if __name__ == "__main__":
++    test()
+\ No newline at end of file
+diff --git a/secret.key b/secret.key
+new file mode 100644
+index 0000000..4dfd4e2
+--- /dev/null
++++ b/secret.key
+@@ -0,0 +1 @@
++0o7eX9jIOMx_SL0Mg-yEW6ne0gf7YM1s6-L5n1-NIWo=
+\ No newline at end of file
+diff --git a/securevault.db b/securevault.db
+new file mode 100644
+index 0000000..080541e
+Binary files /dev/null and b/securevault.db differ
+diff --git a/securevault/__init__.py b/securevault/__init__.py
+new file mode 100644
+index 0000000..e69de29
+diff --git a/securevault/__pycache__/__init__.cpython-314.pyc b/securevault/__pycache__/__init__.cpython-314.pyc
+new file mode 100644
+index 0000000..0491ccf
+Binary files /dev/null and b/securevault/__pycache__/__init__.cpython-314.pyc differ
+diff --git a/securevault/__pycache__/database.cpython-314.pyc b/securevault/__pycache__/database.cpython-314.pyc
+new file mode 100644
+index 0000000..58dd392
+Binary files /dev/null and b/securevault/__pycache__/database.cpython-314.pyc differ
+diff --git a/securevault/__pycache__/encryption.cpython-314.pyc b/securevault/__pycache__/encryption.cpython-314.pyc
+new file mode 100644
+index 0000000..230c2a8
+Binary files /dev/null and b/securevault/__pycache__/encryption.cpython-314.pyc differ
+diff --git a/securevault/__pycache__/hibp.cpython-314.pyc b/securevault/__pycache__/hibp.cpython-314.pyc
+new file mode 100644
+index 0000000..fa321e7
+Binary files /dev/null and b/securevault/__pycache__/hibp.cpython-314.pyc differ
+diff --git a/securevault/database.py b/securevault/database.py
+new file mode 100644
+index 0000000..d2d27da
+--- /dev/null
++++ b/securevault/database.py
+@@ -0,0 +1,138 @@
++import sqlite3
++import os
++
++DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'securevault.db')
++
++def get_connection():
++    conn = sqlite3.connect(DB_PATH)
++    return conn
++
++def initialize_database():
++    conn = get_connection()
++    cursor = conn.cursor()
++    cursor.execute('''
++        CREATE TABLE IF NOT EXISTS users (
++            id INTEGER PRIMARY KEY AUTOINCREMENT,
++            username TEXT UNIQUE NOT NULL,
++            password_hash TEXT NOT NULL
++        )
++    ''')
++    cursor.execute('''
++        CREATE TABLE IF NOT EXISTS passwords (
++            id INTEGER PRIMARY KEY AUTOINCREMENT,
++            user_id INTEGER NOT NULL,
++            website TEXT NOT NULL,
++            username TEXT NOT NULL,
++            encrypted_password TEXT NOT NULL,
++            category TEXT DEFAULT 'General',
++            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
++            FOREIGN KEY (user_id) REFERENCES users(id)
++        )
++    ''')
++    conn.commit()
++    conn.close()
++
++def register_user(username, password_hash):
++    conn = get_connection()
++    cursor = conn.cursor()
++    try:
++        cursor.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)',
++                      (username, password_hash))
++        conn.commit()
++        return True
++    except sqlite3.IntegrityError:
++        return False
++    finally:
++        conn.close()
++
++def login_user(username, password_hash):
++    conn = get_connection()
++    cursor = conn.cursor()
++    cursor.execute('SELECT id FROM users WHERE username = ? AND password_hash = ?',
++                  (username, password_hash))
++    user = cursor.fetchone()
++    conn.close()
++    return user[0] if user else None
++
++def save_password(user_id, website, username, encrypted_password, category='General'):
++    conn = get_connection()
++    cursor = conn.cursor()
++    cursor.execute('''
++        INSERT INTO passwords (user_id, website, username, encrypted_password, category)
++        VALUES (?, ?, ?, ?, ?)
++    ''', (user_id, website, username, encrypted_password, category))
++    conn.commit()
++    conn.close()
++
++def get_passwords(user_id):
++    conn = get_connection()
++    cursor = conn.cursor()
++    cursor.execute('''
++        SELECT id, website, username, encrypted_password, category, created_at 
++        FROM passwords WHERE user_id = ?
++    ''', (user_id,))
++    rows = cursor.fetchall()
++    conn.close()
++    return rows
++
++def delete_password(password_id):
++    conn = get_connection()
++    cursor = conn.cursor()
++    cursor.execute('DELETE FROM passwords WHERE id = ?', (password_id,))
++    conn.commit()
++    conn.close()
++
++def update_password(password_id, website, username, encrypted_password, category):
++    conn = get_connection()
++    cursor = conn.cursor()
++    cursor.execute('''
++        UPDATE passwords 
++        SET website = ?, username = ?, encrypted_password = ?, category = ?
++        WHERE id = ?
++    ''', (website, username, encrypted_password, category, password_id))
++    conn.commit()
++    conn.close()
++
++def search_passwords(user_id, keyword):
++    conn = get_connection()
++    cursor = conn.cursor()
++    cursor.execute('''
++        SELECT id, website, username, encrypted_password, category, created_at 
++        FROM passwords 
++        WHERE user_id = ? AND (website LIKE ? OR username LIKE ?)
++    ''', (user_id, f'%{keyword}%', f'%{keyword}%'))
++    rows = cursor.fetchall()
++    conn.close()
++    return rows
++
++def get_password_by_id(password_id):
++    conn = get_connection()
++    cursor = conn.cursor()
++    cursor.execute('''
++        SELECT id, website, username, encrypted_password, category 
++        FROM passwords WHERE id = ?
++    ''', (password_id,))
++    row = cursor.fetchone()
++    conn.close()
++    return row
++
++def get_passwords_by_category(user_id, category):
++    conn = get_connection()
++    cursor = conn.cursor()
++    cursor.execute('''
++        SELECT id, website, username, encrypted_password, category, created_at 
++        FROM passwords 
++        WHERE user_id = ? AND category = ?
++    ''', (user_id, category))
++    rows = cursor.fetchall()
++    conn.close()
++    return rows
++    def get_all_categories(user_id):
++    conn = get_connection()
++    cursor = conn.cursor()
++    cursor.execute('''
++        SELECT DISTINCT category FROM passwords WHERE user_id = ?
++    ''', (user_id,))
++    categories = [row[0] for row in cursor.fetchall()]
++    conn.close()
++    return categories
+\ No newline at end of file
+diff --git a/securevault/encryption.py b/securevault/encryption.py
+new file mode 100644
+index 0000000..73b47cc
+--- /dev/null
++++ b/securevault/encryption.py
+@@ -0,0 +1,31 @@
++import hashlib
++import os
++from cryptography.fernet import Fernet
++
++KEY_PATH = os.path.join(os.path.dirname(__file__), '..', 'secret.key')
++
++def generate_key():
++    if not os.path.exists(KEY_PATH):
++        key = Fernet.generate_key()
++        with open(KEY_PATH, 'wb') as f:
++            f.write(key)
++
++def load_key():
++    with open(KEY_PATH, 'rb') as f:
++        return f.read()
++
++def encrypt_password(plain_password):
++    key = load_key()
++    f = Fernet(key)
++    return f.encrypt(plain_password.encode()).decode()
++
++def decrypt_password(encrypted_password):
++    key = load_key()
++    f = Fernet(key)
++    return f.decrypt(encrypted_password.encode()).decode()
++
++def hash_password(password):
++    return hashlib.sha256(password.encode()).hexdigest()
++
++def verify_password(password, hashed):
++    return hash_password(password) == hashed
+\ No newline at end of file
+diff --git a/securevault/hibp.py b/securevault/hibp.py
+new file mode 100644
+index 0000000..7d77286
+--- /dev/null
++++ b/securevault/hibp.py
+@@ -0,0 +1,21 @@
++import hashlib
++import requests
++
++def check_password_breached(password):
++    sha1 = hashlib.sha1(password.encode()).hexdigest().upper()
++    prefix = sha1[:5]
++    suffix = sha1[5:]
++
++    url = f"https://api.pwnedpasswords.com/range/{prefix}"
++    response = requests.get(url)
++
++    if response.status_code != 200:
++        return None
++
++    hashes = response.text.splitlines()
++    for line in hashes:
++        h, count = line.split(':')
++        if h == suffix:
++            return int(count)
++
++    return 0
+\ No newline at end of file
+diff --git a/test_encryption.py b/test_encryption.py
+new file mode 100644
+index 0000000..a3367af
+--- /dev/null
++++ b/test_encryption.py
+@@ -0,0 +1,22 @@
++from securevault.encryption import generate_key, encrypt_password, decrypt_password, hash_password, verify_password
++
++def test_encryption():
++    generate_key()
++
++    # Test encrypt and decrypt
++    original = "supersecretpassword"
++    encrypted = encrypt_password(original)
++    decrypted = decrypt_password(encrypted)
++    print(f"Original: {original}")
++    print(f"Encrypted: {encrypted}")
++    print(f"Decrypted: {decrypted}")
++    print(f"Match: {original == decrypted}")
++
++    # Test hashing
++    hashed = hash_password("mypassword")
++    print(f"Hash: {hashed}")
++    print(f"Verify correct: {verify_password('mypassword', hashed)}")
++    print(f"Verify wrong: {verify_password('wrongpassword', hashed)}")
++
++if __name__ == "__main__":
++    test_encryption()
+\ No newline at end of file
+diff --git a/vault_screen.py b/vault_screen.py
+new file mode 100644
+index 0000000..3916aab
+--- /dev/null
++++ b/vault_screen.py
+@@ -0,0 +1,73 @@
++import tkinter as tk
++from tkinter import ttk
++
++class VaultScreen:
++    def __init__(self, root):
++        self.root = root
++        self.root.title("SecureVault - Password Vault")
++        self.root.geometry("800x500")
++
++        # Title Label
++        title = tk.Label(root, text="My Password Vault", font=("Arial", 18, "bold"))
++        title.pack(pady=10)
++
++        # Table Frame
++        frame = tk.Frame(root)
++        frame.pack(pady=10, fill="both", expand=True)
++
++        # Treeview Table
++        self.tree = ttk.Treeview(frame, columns=("Website", "Username", "Password"), show="headings")
++        self.tree.heading("Website", text="Website")
++        self.tree.heading("Username", text="Username")
++        self.tree.heading("Password", text="Password")
++        self.tree.column("Website", width=200)
++        self.tree.column("Username", width=200)
++        self.tree.column("Password", width=200)
++        self.tree.pack(fill="both", expand=True)
++
++        # Sample Data for testing
++        sample_data = [
++            ("facebook.com", "ayesha123", "••••••"),
++            ("gmail.com", "ayesha@gmail.com", "••••••"),
++            ("github.com", "ayesha_dev", "••••••"),
++        ]
++        for item in sample_data:
++            self.tree.insert("", "end", values=item)
++
++        # Buttons Frame
++        btn_frame = tk.Frame(root)
++        btn_frame.pack(pady=10)
++
++        # Add Entry Button
++        add_btn = tk.Button(btn_frame, text="Add Entry", width=15, bg="green", fg="white")
++        add_btn.grid(row=0, column=0, padx=10)
++
++        # Delete Entry Button
++        delete_btn = tk.Button(btn_frame, text="Delete Entry", width=15, bg="red", fg="white", command=self.delete_entry)
++        delete_btn.grid(row=0, column=1, padx=10)
++
++        # Copy Password Button
++        copy_btn = tk.Button(btn_frame, text="Copy Password", width=15, bg="blue", fg="white")
++        copy_btn.grid(row=0, column=2, padx=10)
++
++        # Show/Hide Password Button
++        self.show_pass = False
++        show_btn = tk.Button(btn_frame, text="Show Password", width=15, bg="orange", fg="white", command=self.toggle_password)
++        show_btn.grid(row=0, column=3, padx=10)
++
++    def toggle_password(self):
++        if self.show_pass:
++            self.show_pass = False
++            for item in self.tree.get_children():
++                values = self.tree.item(item)["values"]
++                self.tree.item(item, values=(values[0], values[1], "••••••"))
++        else:
++            self.show_pass = True
++            for item in self.tree.get_children():
++                values = self.tree.item(item)["values"]
++                self.tree.item(item, values=(values[0], values[1], values[2]))
++
++    def delete_entry(self):
++        selected = self.tree.selection()
++        if selected:
++            self.tree.delete(selected)
+\ No newline at end of file

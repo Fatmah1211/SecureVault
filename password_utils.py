@@ -60,3 +60,25 @@ def check_hibp(password):
 
     except requests.exceptions.ConnectionError:
         return "offline"
+from securevault.database import register_user as db_register, login_user as db_login, initialize_database
+from securevault.encryption import generate_key, hash_password
+
+def register_user(username, password):
+    generate_key()
+    initialize_database()
+    hashed = hash_password(password)
+    success = db_register(username, hashed)
+    if success:
+        return True, "Registration successful"
+    else:
+        return False, "Username already exists"
+
+def login_user(username, password):
+    generate_key()
+    initialize_database()
+    hashed = hash_password(password)
+    user_id = db_login(username, hashed)
+    if user_id:
+        return True, user_id
+    else:
+        return False, "Invalid credentials"
