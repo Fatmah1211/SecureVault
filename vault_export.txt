@@ -1,0 +1,14 @@
+SecureVault Export
+==================
+Website: facebook
+Username: hala
+Password: umar
+------------------
+Website: instagram
+Username: fatima
+Password: 1234
+------------------
+Website: pinterest
+Username: eli_king
+Password: Wu/P9OW8FEM,
+------------------

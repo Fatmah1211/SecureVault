@@ -82,4 +82,16 @@ count = check_password_breached("password123")
 | Drakhshan Abbas | vault-screen-extras | Search, filter, categories |
 
 ## Screenshots
-Coming soon.
+## Screenshots
+
+### Login Screen
+![Login](screenshots/screen1.png)
+
+### Password Vault
+![Vault](screenshots/screen2.png)
+
+### Password Generator
+![Generator](screenshots/screen3.png)
+
+### Full App Overview
+![Overview](screenshots/overview.png)
