@@ -95,3 +95,22 @@ count = check_password_breached("password123")
 
 ### Full App Overview
 ![Overview](screenshots/overview.png)
+
+## Backend & API Explanation
+
+### Encryption
+All passwords are encrypted using Fernet symmetric encryption from the `cryptography` library before being stored in the SQLite database. A secret key is generated once and stored locally in `secret.key`. Even if someone accesses the database file directly, all passwords appear as unreadable encrypted strings.
+
+### HaveIBeenPwned API
+The app uses the HIBP k-anonymity model to check if a password has been leaked in known data breaches. Only the first 5 characters of the SHA1 hash of the password are sent to the API — the full password never leaves the device. The API returns all matching hashes and the app checks locally if the full hash appears in the results.
+
+## GitHub Issues
+- [Connect delete entry to backend database](https://github.com/Fatmah1211/SecureVault/issues/12)
+- [Connect edit entry to backend database](https://github.com/Fatmah1211/SecureVault/issues/10)
+- [Add category filter to vault screen](https://github.com/Fatmah1211/SecureVault/issues/11)
+
+## Major Pull Requests
+- [vault-screen base UI setup](https://github.com/Fatmah1211/SecureVault/pulls)
+- [generator-screen base UI setup](https://github.com/Fatmah1211/SecureVault/pulls)
+- [login-screen implementation](https://github.com/Fatmah1211/SecureVault/pulls)
+- [backend + integration final merge](https://github.com/Fatmah1211/SecureVault/pulls)
