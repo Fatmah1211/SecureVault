@@ -23,60 +23,70 @@ class VaultScreen:
         self.user_id = user_id
         self.real_passwords = {}
         self.root.title("SecureVault - Password Vault")
-        self.root.geometry("900x600")
-        self.root.config(bg="#1e1e2e")
+        self.root.geometry("960x640")
+        self.root.config(bg=BG)
 
-        # Header
-        header = tk.Frame(root, bg="#313244", pady=15)
+  
+        tk.Frame(self.root, bg=ACCENT, height=3).pack(fill="x", side="top")
+
+    
+        header = tk.Frame(root, bg=PANEL, pady=18, highlightthickness=1, highlightbackground=BORDER)
         header.pack(fill="x")
-        tk.Label(header, text="🔐 SecureVault", font=("Arial", 24, "bold"), bg="#313244", fg="#cba6f7").pack()
-        tk.Label(header, text="Your passwords, safe and secure", font=("Arial", 11), bg="#313244", fg="#a6adc8").pack()
+        tk.Label(header, text="⛨ SECUREVAULT OVERVIEW", font=(MONO, 20, "bold"), bg=PANEL, fg=TEXT_MAIN).pack()
+        tk.Label(header, text="LOCAL DEPLOYMENT · ZERO PLAINTEXT CORE", font=(MONO, 9), bg=PANEL, fg=TEXT_MUTED).pack(pady=(4, 0))
 
-        # Search Bar
-        search_frame = tk.Frame(root, bg="#1e1e2e")
-        search_frame.pack(pady=15)
-        tk.Label(search_frame, text="🔍", bg="#1e1e2e", fg="#cba6f7", font=("Arial", 13)).pack(side="left", padx=5)
+  
+        search_frame = tk.Frame(root, bg=BG)
+        search_frame.pack(pady=20)
+        tk.Label(search_frame, text="🔍 SCAN QUERY:", bg=BG, fg=TEXT_MUTED, font=(MONO, 10, "bold")).pack(side="left", padx=5)
+        
         self.search_var = tk.StringVar()
         self.search_var.trace("w", self.search_entries)
-        search_entry = tk.Entry(search_frame, textvariable=self.search_var, width=35,
-                                font=("Arial", 11), bg="#313244", fg="#cdd6f4",
-                                insertbackground="white", relief="flat", bd=8)
-        search_entry.pack(side="left", padx=5)
-        tk.Button(search_frame, text="Clear", bg="#45475a", fg="white",
-                  font=("Arial", 10), relief="flat", padx=10,
+        
+        search_box = tk.Frame(search_frame, bg=FIELD, highlightthickness=1, highlightbackground=BORDER)
+        search_box.pack(side="left", padx=5)
+        
+        search_entry = tk.Entry(search_box, textvariable=self.search_var, width=38,
+                                font=(SANS, 11), bg=FIELD, fg=TEXT_MAIN,
+                                insertbackground=ACCENT, relief="flat", bd=0)
+        search_entry.pack(padx=10, pady=6)
+        
+        tk.Button(search_frame, text="RESET", bg=PANEL, fg=TEXT_MAIN, activebackground=BORDER, activeforeground=TEXT_MAIN,
+                  font=(MONO, 9, "bold"), relief="flat", padx=14, pady=5, cursor="hand2",
                   command=self.clear_search).pack(side="left", padx=5)
 
-        # Table Frame
-        table_frame = tk.Frame(root, bg="#1e1e2e")
-        table_frame.pack(pady=5, fill="both", expand=True, padx=20)
 
-        # Treeview Style
+        table_frame = tk.Frame(root, bg=PANEL, highlightthickness=1, highlightbackground=BORDER)
+        table_frame.pack(pady=5, fill="both", expand=True, padx=30)
+
+       
         style = ttk.Style()
         style.theme_use("clam")
         style.configure("Treeview",
-                        background="#313244",
-                        foreground="#cdd6f4",
-                        rowheight=32,
-                        fieldbackground="#313244",
-                        font=("Arial", 11))
+                        background=FIELD,
+                        foreground=TEXT_MAIN,
+                        rowheight=34,
+                        fieldbackground=FIELD,
+                        font=(SANS, 10))
         style.configure("Treeview.Heading",
-                        background="#45475a",
-                        foreground="#cba6f7",
-                        font=("Arial", 12, "bold"),
+                        background=PANEL,
+                        foreground=TEXT_MUTED,
+                        font=(MONO, 10, "bold"),
                         relief="flat")
-        style.map("Treeview", background=[("selected", "#585b70")])
+        style.map("Treeview", background=[("selected", ACCENT)], foreground=[("selected", BG)])
+        style.map("Treeview.Heading", background=[('active', BORDER)])
 
         self.tree = ttk.Treeview(table_frame, columns=("Website", "Username", "Password"), show="headings")
-        self.tree.heading("Website", text="🌐  Website")
-        self.tree.heading("Username", text="👤  Username")
-        self.tree.heading("Password", text="🔑  Password")
-        self.tree.column("Website", width=250)
-        self.tree.column("Username", width=250)
-        self.tree.column("Password", width=250)
+        self.tree.heading("Website", text="TARGET DOMAIN")
+        self.tree.heading("Username", text="USER ACCESS IDENTITY")
+        self.tree.heading("Password", text="PROTECTED STRING STATUS")
+        self.tree.column("Website", width=300, anchor="w")
+        self.tree.column("Username", width=300, anchor="w")
+        self.tree.column("Password", width=300, anchor="w")
 
         scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=scrollbar.set)
-        self.tree.pack(side="left", fill="both", expand=True)
+        self.tree.pack(side="left", fill="both", expand=True, padx=2, pady=2)
         scrollbar.pack(side="right", fill="y")
 
         # Sample Data
