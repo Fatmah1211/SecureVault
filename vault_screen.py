@@ -1,10 +1,14 @@
 import tkinter as tk
+import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
+from securevault.database import get_passwords, delete_password
+from securevault.encryption import decrypt_password
 
 class VaultScreen:
-    def __init__(self, root):
+    def __init__(self, root, user_id):
         self.root = root
+        self.user_id = user_id
+        self.real_passwords = {}
         self.root.title("SecureVault - Password Vault")
         self.root.geometry("900x600")
         self.root.config(bg="#1e1e2e")
