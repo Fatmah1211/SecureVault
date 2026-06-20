@@ -92,20 +92,40 @@ class VaultScreen:
         # Sample Data
         self.all_data = []
         # Buttons Row 1
-        btn_frame1 = tk.Frame(root, bg="#1e1e2e")
-        btn_frame1.pack(pady=8)
+        # Action Control Panel (Row 1)
+        btn_frame1 = tk.Frame(root, bg=BG)
+        btn_frame1.pack(pady=(15, 5))
 
         buttons1 = [
-            ("➕ Add Entry", "#a6e3a1", "#1e1e2e", self.add_entry),
-            ("🗑 Delete", "#f38ba8", "#1e1e2e", self.delete_entry),
-            ("📋 Copy", "#89b4fa", "#1e1e2e", self.copy_password),
-            ("✏️ Edit", "#89dceb", "#1e1e2e", self.edit_entry),
-            ("👁 Show/Hide", "#fab387", "#1e1e2e", self.toggle_password),
+            ("➕ ADD ENTRY", ACCENT, BG, self.add_entry),
+            ("👁 SHOW/HIDE", PANEL, TEXT_MAIN, self.toggle_password),
+            ("📋 COPY RAW", PANEL, TEXT_MAIN, self.copy_password),
+            ("✏️ EDIT CELL", PANEL, TEXT_MAIN, self.edit_entry),
+            ("🗑 PURGE ROW", "#3a1e22", DANGER, self.delete_entry),
         ]
-        for text, bg, fg, cmd in buttons1:
-            tk.Button(btn_frame1, text=text, bg=bg, fg=fg,
-                      font=("Arial", 10, "bold"), relief="flat",
-                      padx=12, pady=6, command=cmd).pack(side="left", padx=6)
+        for text, b_color, f_color, cmd in buttons1:
+            tk.Button(btn_frame1, text=text, bg=b_color, fg=f_color,
+                      activebackground=b_color, activeforeground=f_color,
+                      font=(MONO, 9, "bold"), relief="flat", cursor="hand2",
+                      padx=14, pady=7, command=cmd).pack(side="left", padx=5)
+
+        # Extended System Tools Panel (Row 2)
+        btn_frame2 = tk.Frame(root, bg=BG)
+        btn_frame2.pack(pady=5)
+
+        buttons2 = [
+            ("🔤 SORT (A-Z)", PANEL, TEXT_MUTED, self.sort_by_website),
+            ("🔢 TELEMETRY", PANEL, TEXT_MUTED, self.count_entries),
+            ("💾 EXPORT COLD", PANEL, TEXT_MUTED, self.export_entries),
+            ("🔑 GENERATOR", PANEL, ACCENT, self.open_generator),
+            ("ℹ️ ABOUT SYSTEM", PANEL, TEXT_MUTED, self.show_about),
+            ("💥 PURGE ALL", "#3a1e22", DANGER, self.clear_all_entries),
+        ]
+        for text, b_color, f_color, cmd in buttons2:
+            tk.Button(btn_frame2, text=text, bg=b_color, fg=f_color,
+                      activebackground=b_color, activeforeground=f_color,
+                      font=(MONO, 9, "bold"), relief="flat", cursor="hand2",
+                      padx=12, pady=6, command=cmd).pack(side="left", padx=5)
 
         # Buttons Row 2
         btn_frame2 = tk.Frame(root, bg="#1e1e2e")
