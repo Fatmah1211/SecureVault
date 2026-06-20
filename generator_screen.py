@@ -6,8 +6,6 @@
 
 import tkinter as tk
 from tkinter import ttk
-import random
-import string
 import pyperclip
 from password_utils import generate_password, check_strength, check_hibp
 
