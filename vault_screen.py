@@ -1,8 +1,21 @@
 import tkinter as tk
-import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from securevault.database import get_passwords, delete_password
 from securevault.encryption import decrypt_password
+
+
+BG          = "#080c10"  
+PANEL       = "#0d1318"   
+FIELD       = "#111922"   
+BORDER      = "#1c2730"   
+BORDER_LIT  = "#1fd9a8"   
+ACCENT      = "#1fd9a8"   
+TEXT_MAIN   = "#e6f1ee"   
+TEXT_MUTED  = "#5b7269"   
+DANGER      = "#ff5d6c"   
+MONO        = "Consolas"
+SANS        = "Segoe UI"
 
 class VaultScreen:
     def __init__(self, root, user_id):
