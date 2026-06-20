@@ -6,7 +6,6 @@
 
 import tkinter as tk
 from tkinter import ttk
-import pyperclip
 from password_utils import generate_password, check_strength, check_hibp
 
 
@@ -222,7 +221,9 @@ class GeneratorScreen(tk.Frame):
         # Copies generated password to clipboard and shows confirmation
         password = self.output_var.get()
         if password:
-            pyperclip.copy(password)
+            self.clipboard_clear()
+            self.clipboard_append(password)
+            self.update()
             self.copy_confirm_label.config(text="✔ Copied to clipboard!", fg="green")
             self.after(2000, lambda: self.copy_confirm_label.config(text=""))
 
