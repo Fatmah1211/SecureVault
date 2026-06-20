@@ -21,7 +21,7 @@ class GeneratorScreen(tk.Frame):
 
     def build_ui(self):
         # ── Title ──────────────────────────────────────────────────
-        tk.Label(self, text="Password Generator", font=("Arial", 16, "bold")).grid(
+        tk.Label(self, text="🔐 Password Generator", font=("Arial", 18, "bold"), fg="#2c3e50").grid(
             row=0, column=0, columnspan=2, pady=(20, 10)
         )
 
@@ -184,7 +184,7 @@ class GeneratorScreen(tk.Frame):
 
         # Update strength indicator
         strength = check_strength(password)
-        colors = {"Weak": "red", "Medium": "orange", "Strong": "green"}
+        colors = {"Weak": "#e74c3c", "Medium": "#f39c12", "Strong": "#27ae60"}
         self.strength_label.config(text=strength, fg=colors[strength])
 
         # Clear previous breach result
