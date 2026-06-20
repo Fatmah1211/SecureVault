@@ -23,7 +23,7 @@ class VaultScreen:
         self.user_id = user_id
         self.real_passwords = {}
         self.root.title("SecureVault - Password Vault")
-        self.root.geometry("960x640")
+        self.root.geometry("1040x660")  
         self.root.config(bg=BG)
 
   
@@ -89,10 +89,13 @@ class VaultScreen:
         self.tree.pack(side="left", fill="both", expand=True, padx=2, pady=2)
         scrollbar.pack(side="right", fill="y")
 
-        # Sample Data
+        self.tree.bind("<MouseWheel>", self._on_mousewheel)
+        self.tree.bind("<Button-4>", self._on_mousewheel)  # Supports Linux scroll up
+        self.tree.bind("<Button-5>", self._on_mousewheel)
+
+        
         self.all_data = []
-        # Buttons Row 1
-        # Action Control Panel (Row 1)
+       
         btn_frame1 = tk.Frame(root, bg=BG)
         btn_frame1.pack(pady=(15, 5))
 
@@ -107,9 +110,9 @@ class VaultScreen:
             tk.Button(btn_frame1, text=text, bg=b_color, fg=f_color,
                       activebackground=b_color, activeforeground=f_color,
                       font=(MONO, 9, "bold"), relief="flat", cursor="hand2",
-                      padx=14, pady=7, command=cmd).pack(side="left", padx=5)
+                      padx=8, pady=6, command=cmd).pack(side="left", padx=4)
 
-        # Extended System Tools Panel (Row 2)
+        
         btn_frame2 = tk.Frame(root, bg=BG)
         btn_frame2.pack(pady=5)
 
@@ -125,7 +128,7 @@ class VaultScreen:
             tk.Button(btn_frame2, text=text, bg=b_color, fg=f_color,
                       activebackground=b_color, activeforeground=f_color,
                       font=(MONO, 9, "bold"), relief="flat", cursor="hand2",
-                      padx=12, pady=6, command=cmd).pack(side="left", padx=5)
+                      padx=8, pady=6, command=cmd).pack(side="left", padx=4)
 
         # Buttons Row 2
         btn_frame2 = tk.Frame(root, bg="#1e1e2e")
@@ -166,6 +169,15 @@ class VaultScreen:
     def clear_search(self):
         self.search_var.set("")
         self.refresh_table()
+
+    def _on_mousewheel(self, event):
+        """Cross-platform scrolling logic for tracking data tables."""
+        if event.num == 4:  
+            self.tree.yview_scroll(-1, "units")
+        elif event.num == 5:  
+            self.tree.yview_scroll(1, "units")
+        else:  
+            self.tree.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def refresh_table(self):
         for item in self.tree.get_children():
@@ -379,26 +391,21 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = VaultScreen(root)
     root.mainloop()
-def open_vault(username):
-    from securevault.database import get_passwords, save_password, get_connection
-    from securevault.encryption import encrypt_password, decrypt_password
+def open_vault(user_id):
+    from securevault.database import get_passwords, save_password
+    from securevault.encryption import decrypt_password
 
     root = tk.Tk()
-    app = VaultScreen(root)
-    app.username = username
-
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('SELECT id FROM users WHERE username = ?', (username,))
-    user = cursor.fetchone()
-    conn.close()
-    app.user_id = user[0] if user else None
+    app = VaultScreen(root, user_id)
 
     app.all_data = []
     if app.user_id:
         passwords = get_passwords(app.user_id)
         for p in passwords:
-            decrypted = decrypt_password(p[3])
+            try:
+                decrypted = decrypt_password(p[3])
+            except Exception:
+                decrypted = "[Decryption Error]"
             app.all_data.append((p[1], p[2], decrypted, p[4]))
         app.refresh_table()
 
