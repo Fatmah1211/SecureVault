@@ -123,8 +123,9 @@ def login_clicked():
 
     success, message = vu.login_user(username, password)
     if success:
+        user_id = message  # message variable holds the user_id integer when successful
         root.destroy()
-        vault_screen.open_vault(username)
+        vault_screen.open_vault(user_id)
     else:
         login_error_label.config(text="⚠ Invalid username or password.")
 
